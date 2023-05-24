@@ -4,7 +4,9 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/uart/uart_component.h"
-#include "esphome/components/text_sensor/text_sensor.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/switch/switch.h"
+#include "esphome/components/light/addressable_light.h"
 
 namespace esphome
 {
@@ -16,8 +18,8 @@ namespace esphome
 
         const static uint8_t TOUCH_STATE_ALL_FIELDS = 11;
 
-        const static uint8_t SWIPE_LEFT = 12;
-        const static uint8_t SWIPE_RIGHT = 13;
+        const static uint8_t TOUCH_STATE_SWIPE_RIGHT = 12;
+        const static uint8_t TOUCH_STATE_SWIPE_LEFT = 13;
 
         struct TouchPoint
         {
@@ -30,13 +32,10 @@ namespace esphome
         public:
             Trigger<TouchPoint> *get_touch_trigger() { return &this->touch_trigger_; }
             Trigger<TouchPoint> *get_release_trigger() { return &this->release_trigger_; }
-            Trigger<TouchPoint> *get_swipe_trigger() { return &this->swipe_trigger_; }
+            Trigger<TouchPoint> *get_swipe_left_trigger() { return &this->swipe_trigger_left_; }
+            Trigger<TouchPoint> *get_swipe_right_trigger() { return &this->swipe_trigger_right_; }
             Trigger<TouchPoint> *get_full_touch_release_trigger() { return &this->full_touch_release_trigger_; }
-
-            void set_status_sensor(text_sensor::TextSensor *text_sensor)
-            {
-                this->status_text_sensor_ = text_sensor;
-            }
+            Trigger<TouchPoint> *get_long_touch_release_trigger() { return &this->long_touch_release_trigger_; }
 
             void set_uart_component(esphome::uart::UARTComponent *uart_component)
             {
@@ -58,10 +57,11 @@ namespace esphome
 
             Trigger<TouchPoint> touch_trigger_;
             Trigger<TouchPoint> release_trigger_;
-            Trigger<TouchPoint> swipe_trigger_;
+            Trigger<TouchPoint> swipe_trigger_left_;
+            Trigger<TouchPoint> swipe_trigger_right_;
             Trigger<TouchPoint> full_touch_release_trigger_;
+            Trigger<TouchPoint> long_touch_release_trigger_;
 
-            text_sensor::TextSensor *status_text_sensor_;
         }; // class TxUltimateTouch
 
     } // namespace tx_ultimate_touch
