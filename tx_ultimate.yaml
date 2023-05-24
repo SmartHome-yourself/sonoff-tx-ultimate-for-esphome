@@ -54,8 +54,13 @@ improv_serial:
 captive_portal:
 
 external_components:
-  - source: /config/esphome/my_components
-
+#  - source: /config/esphome/my_components
+  - source:
+      type: git
+      url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
+      ref: main
+    components: [tx_ultimate_touch]
+    
 switch:
   - platform: gpio
     id: relay_1
@@ -84,18 +89,6 @@ switch:
     name: "PA Power"
     restore_mode: RESTORE_DEFAULT_ON
 
-binary_sensor:
-  - platform: template
-    name: "Touchfield 1"
-    id: touchfield_1
-
-  - platform: template
-    name: "Touchfield 2"
-    id: touchfield_2
-
-  - platform: template
-    name: "Touchfield 3"
-    id: touchfield_3
 
 light:
   - platform: neopixelbus
