@@ -1,9 +1,8 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, text_sensor
+from esphome.components import uart
 from esphome.const import (
     CONF_ID,
-    CONF_NAME,
 )
 
 from esphome import automation
@@ -13,17 +12,17 @@ DEPENDENCIES = ['uart']
 
 # CONFIG-IDs
 CONF_TX_ULTIMATE_TOUCH = "tx_ultimate_touch"
-CONF_STATUS_SENSOR = "status_sensor"
+
 CONF_UART = "uart"
 
 CONF_ON_PRESS = "on_press"
 CONF_ON_RELEASE = "on_release"
-CONF_ON_SWIPE_RELEASE = "on_swipe_release"
+
+CONF_ON_SWIPE_LEFT = "on_swipe_left"
+CONF_ON_SWIPE_RIGHT = "on_swipe_right"
+
 CONF_ON_FULL_TOUCH_RELEASE = "on_full_touch_release"
-
-# DEFAULTs
-DEFAULT_NAME = "TX Ultimate"
-
+CONF_ON_LONG_TOUCH_RELEASE = "on_long_touch_release"
 
 # ------------------------------
 # ------------------------------
@@ -43,14 +42,14 @@ TxUltimateTouch = tx_ultimate_touch_ns.class_(
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(TxUltimateTouch),
 
-    cv.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    cv.Required(CONF_STATUS_SENSOR): cv.use_id(text_sensor),
     cv.Required(CONF_UART): cv.use_id(uart),
 
     cv.Optional(CONF_ON_PRESS): automation.validate_automation(single=True),
     cv.Optional(CONF_ON_RELEASE): automation.validate_automation(single=True),
-    cv.Optional(CONF_ON_SWIPE_RELEASE): automation.validate_automation(single=True),
+    cv.Optional(CONF_ON_SWIPE_LEFT): automation.validate_automation(single=True),
+    cv.Optional(CONF_ON_SWIPE_RIGHT): automation.validate_automation(single=True),
     cv.Optional(CONF_ON_FULL_TOUCH_RELEASE): automation.validate_automation(single=True),
+    cv.Optional(CONF_ON_LONG_TOUCH_RELEASE): automation.validate_automation(single=True),
 
 }).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
 
@@ -59,9 +58,6 @@ CONFIG_SCHEMA = cv.Schema({
 #  Actions
 # ------------------------------
 async def register_tx_ultimate_touch(var, config):
-    status_sensor = await cg.get_variable(config[CONF_STATUS_SENSOR])
-    cg.add(var.set_status_sensor(status_sensor))
-
     uart_component = await cg.get_variable(config[CONF_UART])
     cg.add(var.set_uart_component(uart_component))
 
@@ -79,11 +75,18 @@ async def register_tx_ultimate_touch(var, config):
             config[CONF_ON_RELEASE],
         )
 
-    if CONF_ON_SWIPE_RELEASE in config:
+    if CONF_ON_SWIPE_LEFT in config:
         await automation.build_automation(
-            var.get_swipe_trigger(),
+            var.get_swipe_left_trigger(),
             [(TouchPoint, "touch")],
-            config[CONF_ON_SWIPE_RELEASE],
+            config[CONF_ON_SWIPE_LEFT],
+        )
+
+    if CONF_ON_SWIPE_RIGHT in config:
+        await automation.build_automation(
+            var.get_swipe_right_trigger(),
+            [(TouchPoint, "touch")],
+            config[CONF_ON_SWIPE_RIGHT],
         )
 
     if CONF_ON_FULL_TOUCH_RELEASE in config:
@@ -91,6 +94,13 @@ async def register_tx_ultimate_touch(var, config):
             var.get_full_touch_release_trigger(),
             [(TouchPoint, "touch")],
             config[CONF_ON_FULL_TOUCH_RELEASE],
+        )
+
+    if CONF_ON_LONG_TOUCH_RELEASE in config:
+        await automation.build_automation(
+            var.get_long_touch_release_trigger(),
+            [(TouchPoint, "touch")],
+            config[CONF_ON_LONG_TOUCH_RELEASE],
         )
 
 
