@@ -69,8 +69,17 @@ namespace esphome
             switch (tp.state)
             {
             case TOUCH_STATE_RELEASE:
-                ESP_LOGD(TAG, "Release (x=%d)", tp.x);
-                this->release_trigger_.trigger(tp);
+                if (tp.x >= 17)
+                {
+                    tp.x = tp.x - 16;
+                    ESP_LOGD(TAG, "Long Press Release (x=%d)", tp.x);
+                    this->long_touch_release_trigger_.trigger(tp);
+                }
+                else
+                {
+                    ESP_LOGD(TAG, "Release (x=%d)", tp.x);
+                    this->release_trigger_.trigger(tp);
+                }
                 break;
 
             case TOUCH_STATE_PRESS:
@@ -78,9 +87,14 @@ namespace esphome
                 this->touch_trigger_.trigger(tp);
                 break;
 
-            case TOUCH_STATE_SWIPE:
-                ESP_LOGD(TAG, "Swipe (x=%d)", tp.x);
-                this->swipe_trigger_.trigger(tp);
+            case TOUCH_STATE_SWIPE_LEFT:
+                ESP_LOGD(TAG, "Swipe Left (x=%d)", tp.x);
+                this->swipe_trigger_left_.trigger(tp);
+                break;
+
+            case TOUCH_STATE_SWIPE_RIGHT:
+                ESP_LOGD(TAG, "Swipe Right (x=%d)", tp.x);
+                this->swipe_trigger_right_.trigger(tp);
                 break;
 
             case TOUCH_STATE_ALL_FIELDS:
@@ -105,7 +119,8 @@ namespace esphome
             int state = get_touch_state(bytes);
             if (state != TOUCH_STATE_PRESS &&
                 state != TOUCH_STATE_RELEASE &&
-                state != TOUCH_STATE_SWIPE &&
+                state != TOUCH_STATE_SWIPE_LEFT &&
+                state != TOUCH_STATE_SWIPE_RIGHT &&
                 state != TOUCH_STATE_ALL_FIELDS)
             {
                 return false;
@@ -132,7 +147,11 @@ namespace esphome
                 return bytes[5];
                 break;
 
-            case TOUCH_STATE_SWIPE:
+            case TOUCH_STATE_SWIPE_LEFT:
+                return bytes[5];
+                break;
+
+            case TOUCH_STATE_SWIPE_RIGHT:
                 return bytes[5];
                 break;
 
@@ -154,6 +173,18 @@ namespace esphome
             if (state == TOUCH_STATE_RELEASE && bytes[5] == TOUCH_STATE_ALL_FIELDS)
             {
                 state = TOUCH_STATE_ALL_FIELDS;
+            }
+
+            if (state == TOUCH_STATE_SWIPE)
+            {
+                if (bytes[5] == TOUCH_STATE_SWIPE_RIGHT)
+                {
+                    state = TOUCH_STATE_SWIPE_RIGHT;
+                }
+                else if (bytes[5] == TOUCH_STATE_SWIPE_LEFT)
+                {
+                    state = TOUCH_STATE_SWIPE_LEFT;
+                }
             }
 
             return state;
