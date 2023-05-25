@@ -1,4 +1,5 @@
 # sonoff-tx-ultimate-for-esphome
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)
 
 # Configuration
 
@@ -112,24 +113,31 @@ Is triggered, if you touch a point on the surface longer than 5 seconds.
 &nbsp;  
   
 # Example Code
-Here is a small example for a sonoff tx ultimate configuration with own action-events based on the full package to use the default main functionality.  
+This is an example for the smallest sonoff tx ultimate configuration including an own action-event.  
+It implement the logic of the package to use the main functionality of the sonoff tx ultimate switch. 
   
+It's up to you, what you do in this events. 
+
 ```
 substitutions:
-  name: "sonoff-tx-ultimate"
-  friendly_name: "TX Ultimate"
+  name: "shys-tx-ultimate"
+  friendly_name: "SHYS TX Ultimate"
   relay_count: "2"
 
 packages:
   smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
- 
+  
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
 api:
 ota:
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
+  
   ap:
     ssid: ${friendly_name} AP
     password: "top_secret"
@@ -141,5 +149,4 @@ tx_ultimate_touch:
   on_press:
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "My Event: Position: %d / State: %d", touch.x, touch.state);
-
 ```
