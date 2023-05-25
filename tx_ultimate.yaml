@@ -1,6 +1,11 @@
 substitutions:
-  name: sonoff-tx-ultimate
-  friendly_name: TX Ultimate
+  name: "sonoff-tx-ultimate"
+  friendly_name: "TX Ultimate"
+
+  relay_count: "2"
+
+  vibra_time: 100ms
+  button_on_time: 200ms
 
   relais_1_pin: GPIO18
   relais_2_pin: GPIO17
@@ -12,8 +17,8 @@ substitutions:
 
   led_pin: GPIO13
 
-  uart_tx_pin: GPIO09
-  uart_rx_pin: GPIO10
+  uart_tx_pin: GPIO19
+  uart_rx_pin: GPIO22
 
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
@@ -22,24 +27,48 @@ substitutions:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  name_add_mac_suffix: true
-  project:
-    name: smarthomeyourself.sonoff_tx_ultimate
-    version: "1.0"
-    
+
+  on_boot:
+    priority: -100
+    then:
+      - binary_sensor.template.publish:
+          id: touchfield_1
+          state: OFF
+      - binary_sensor.template.publish:
+          id: touchfield_2
+          state: OFF
+      - binary_sensor.template.publish:
+          id: touchfield_3
+          state: OFF
+      - binary_sensor.template.publish:
+          id: multi_touch
+          state: OFF
+      - binary_sensor.template.publish:
+          id: swipe_left
+          state: OFF
+      - binary_sensor.template.publish:
+          id: swipe_right
+          state: OFF
+
 esp32:
   board: esp32dev
   framework:
     type: arduino
 
+logger:
+  hardware_uart: UART2
+  level: DEBUG
+  logs:
+    binary_sensor: INFO
+    light: INFO
+    script: INFO
+    switch: INFO
+    tx_ultimate_touch: INFO
+    uart_debug: INFO
 
 dashboard_import:
   package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
   import_full_config: false
-
-logger:
-  hardware_uart: UART2
-  level: INFO
 
 api:
 
@@ -54,41 +83,73 @@ improv_serial:
 captive_portal:
 
 external_components:
-#  - source: /config/esphome/my_components
   - source:
       type: git
       url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
       ref: main
     components: [tx_ultimate_touch]
-    
+
+binary_sensor:
+  - platform: template
+    name: "Touchfield 1"
+    id: touchfield_1
+    on_press:
+      - switch.toggle: relay_1
+
+  - platform: template
+    name: "Touchfield 2"
+    id: touchfield_2
+    on_press:
+      - switch.toggle: relay_2
+
+  - platform: template
+    name: "Touchfield 3"
+    id: touchfield_3
+    on_press:
+      - switch.toggle: relay_3
+
+  - platform: template
+    name: "Swipe left"
+    id: swipe_left
+
+  - platform: template
+    name: "Swipe_right"
+    id: swipe_right
+
+  - platform: template
+    name: "Multi Touch"
+    id: multi_touch
+
 switch:
   - platform: gpio
     id: relay_1
     name: "${friendly_name} L1"
     pin: ${relais_1_pin}
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_2
     name: "${friendly_name} L2"
     pin: ${relais_2_pin}
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_3
     name: "${friendly_name} L3"
     pin: ${relais_3_pin}
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: vibra
     pin: ${vibra_motor_pin}
     name: "${friendly_name} Vibration"
-    restore_mode: RESTORE_DEFAULT_OFF
+    restore_mode: ALWAYS_OFF
 
   - platform: gpio
     id: pa_power
     pin: ${pa_power_pin}
     name: "PA Power"
-    restore_mode: RESTORE_DEFAULT_ON
-
+    restore_mode: ALWAYS_ON
 
 light:
   - platform: neopixelbus
@@ -124,23 +185,21 @@ i2s_audio:
   i2s_bclk_pin: ${audio_bclk_pin}
 
 uart:
-  tx_pin: GPIO19
-  rx_pin: GPIO22
+  tx_pin: ${uart_tx_pin}
+  rx_pin: ${uart_rx_pin}
   id: my_uart
   baud_rate: 115200
   data_bits: 8
   stop_bits: 1
   parity: NONE
-  
-#  debug:
-#    direction: RX
-#    dummy_receiver: false
-#    after:
-#      timeout: 2s
-#      bytes: 2048
-#    sequence:
-#      - lambda: UARTDebug::log_hex(direction, bytes, ' ');
-
+  debug:
+    direction: RX
+    dummy_receiver: false
+    after:
+      timeout: 2s
+      bytes: 2048
+    sequence:
+      - lambda: UARTDebug::log_hex(direction, bytes, ' ');
 
 tx_ultimate_touch:
   id: tx_touch
@@ -151,8 +210,9 @@ tx_ultimate_touch:
         id: touch_led_marker
         pos: !lambda "return touch.x;"
         state: !lambda "return touch.state;"
+
     - lambda: >
-        ESP_LOGI("tx_ultimate_touch", "Touch Position: %d / State: %d", touch.x, touch.state);
+        ESP_LOGD("tx_ultimate_touch.on_press", "Touch Position: %d / State: %d", touch.x, touch.state);
 
   on_release:
     - script.execute:
@@ -160,8 +220,16 @@ tx_ultimate_touch:
         pos: !lambda "return touch.x;"
         state: !lambda "return touch.state;"
 
+    - script.execute:
+        id: handle_release
+        pos: !lambda "return touch.x;"
+
+    - switch.turn_on: vibra
+    - delay: ${vibra_time}
+    - switch.turn_off: vibra
+
     - lambda: >
-        ESP_LOGI("tx_ultimate_touch", "Release Position: %d / State: %d", touch.x, touch.state);
+        ESP_LOGD("tx_ultimate_touch.on_release", "Release Position: %d / State: %d", touch.x, touch.state);
 
   on_swipe_left:
     - script.execute:
@@ -169,8 +237,20 @@ tx_ultimate_touch:
         pos: !lambda "return touch.x;"
         state: !lambda "return touch.state;"
 
+    - switch.turn_on: vibra
+    - delay: ${vibra_time}
+    - switch.turn_off: vibra
+
+    - binary_sensor.template.publish:
+        id: swipe_left
+        state: ON
+    - delay: ${button_on_time}
+    - binary_sensor.template.publish:
+        id: swipe_left
+        state: OFF
+
     - lambda: >
-        ESP_LOGI("tx_ultimate_touch", "Swipe Left Position: %d / State: %d", touch.x, touch.state);
+        ESP_LOGD("tx_ultimate_touch.on_swipe_left", "Swipe Left Position: %d / State: %d", touch.x, touch.state);
 
   on_swipe_right:
     - script.execute:
@@ -178,8 +258,20 @@ tx_ultimate_touch:
         pos: !lambda "return touch.x;"
         state: !lambda "return touch.state;"
 
+    - switch.turn_on: vibra
+    - delay: ${vibra_time}
+    - switch.turn_off: vibra
+
+    - binary_sensor.template.publish:
+        id: swipe_right
+        state: ON
+    - delay: ${button_on_time}
+    - binary_sensor.template.publish:
+        id: swipe_right
+        state: OFF
+
     - lambda: >
-        ESP_LOGI("tx_ultimate_touch", "Swipe Right Position: %d / State: %d", touch.x, touch.state);
+        ESP_LOGD("tx_ultimate_touch.on_swipe_right", "Swipe Right Position: %d / State: %d", touch.x, touch.state);
 
   on_full_touch_release:
     - script.execute:
@@ -187,10 +279,112 @@ tx_ultimate_touch:
         pos: !lambda "return touch.x;"
         state: !lambda "return touch.state;"
 
+    - switch.turn_on: vibra
+    - delay: ${vibra_time}
+    - switch.turn_off: vibra
+
+    - binary_sensor.template.publish:
+        id: multi_touch
+        state: ON
+    - delay: ${button_on_time}
+    - binary_sensor.template.publish:
+        id: multi_touch
+        state: OFF
+
     - lambda: >
-        ESP_LOGI("tx_ultimate_touch", "Full Touch Release Position: %d / State: %d", touch.x, touch.state);
+        ESP_LOGD("tx_ultimate_touch.on_full_touch_release", "Full Touch Release Position: %d / State: %d", touch.x, touch.state);
+
+  on_long_touch_release:
+    - script.execute:
+        id: touch_led_marker
+        pos: !lambda "return touch.x;"
+        state: !lambda "return touch.state;"
+
+    - switch.turn_on: vibra
+    - delay: ${vibra_time}
+    - switch.turn_off: vibra
+
+    - lambda: >
+        ESP_LOGD("tx_ultimate_touch.on_long_touch_release", "Long Touch Release Position: %d / State: %d", touch.x, touch.state);
 
 script:
+  - id: handle_release
+    mode: restart
+    parameters:
+      pos: int
+    then:
+      - if:
+          condition:
+            lambda: "return ${relay_count}==1;"
+          then:
+            - binary_sensor.template.publish:
+                id: touchfield_1
+                state: ON
+            - delay: ${button_on_time}
+            - binary_sensor.template.publish:
+                id: touchfield_1
+                state: OFF
+
+      - if:
+          condition:
+            lambda: "return ${relay_count}==2;"
+          then:
+            - if:
+                condition:
+                  lambda: "return pos <= 5;"
+                then:
+                  - binary_sensor.template.publish:
+                      id: touchfield_1
+                      state: ON
+                  - delay: ${button_on_time}
+                  - binary_sensor.template.publish:
+                      id: touchfield_1
+                      state: OFF
+                else:
+                  - binary_sensor.template.publish:
+                      id: touchfield_2
+                      state: ON
+                  - delay: ${button_on_time}
+                  - binary_sensor.template.publish:
+                      id: touchfield_2
+                      state: OFF
+
+      - if:
+          condition:
+            lambda: "return ${relay_count}==3;"
+          then:
+            - if:
+                condition:
+                  lambda: "return pos <= 3;"
+                then:
+                  - binary_sensor.template.publish:
+                      id: touchfield_1
+                      state: ON
+                  - delay: ${button_on_time}
+                  - binary_sensor.template.publish:
+                      id: touchfield_1
+                      state: OFF
+                else:
+                  - if:
+                      condition:
+                        lambda: "return pos <= 7;"
+                      then:
+                        - binary_sensor.template.publish:
+                            id: touchfield_2
+                            state: ON
+                        - delay: ${button_on_time}
+                        - binary_sensor.template.publish:
+                            id: touchfield_2
+                            state: OFF
+                      else:
+                        - binary_sensor.template.publish:
+                            id: touchfield_3
+                            state: ON
+                        - delay: ${button_on_time}
+                        - binary_sensor.template.publish:
+                            id: touchfield_3
+                            state: OFF
+
   - id: touch_led_marker
     mode: restart
     parameters:
