@@ -141,9 +141,7 @@ Wird ausgelöst, wenn Sie einen Punkt auf der Oberfläche länger als 5 Sekunden
   
 # Beispielcode
 Dies ist ein Beispiel für die kleinste Konfiguration des Sonoff TX Ultimate, einschließlich einer eigenen Aktion.  
-Es implementiert die Logik des Pakets, um die Hauptfunktionen des Sonoff
-
- TX Ultimate-Schalters zu verwenden. 
+Es implementiert die Logik des Pakets, um die Hauptfunktionen des Sonoff TX Ultimate-Schalters zu verwenden.  
   
 Es liegt an Ihnen, was Sie in diesen Ereignissen tun. 
 
@@ -184,12 +182,12 @@ tx_ultimate_touch:
 # Komponenten
 
 ### Relais
-Je nach Schaltervariante hat der TX 1-3 Relais installiert. Daher gibt es 3 Schalter für die Relais.  
-Laut Dokumentation gibt es auch einen GPIO für ein 4. Relais, aber mir ist keine 4-Wege-Variante bekannt.  
+Je nach Schaltervariante enthält der TX 1-3 Relais. Daher gibt es 3 Schalter für die Relais im Code.  
+Laut Dokumentation gibt es auch einen GPIO für ein 4. Relais, aber mir ist keine 4-Wege-Variante bekannt. Daher habe ich darauf verzichtet, diese zu berücksichtigen.  
 
 ### Touch-Oberfläche
-Die Touch-Oberfläche kommuniziert über UART mit dem ESP. 
-Sie sendet Informationen für die folgenden Ereignisse:
+Die Touch-Oberfläche kommuniziert über UART mit dem ESP.  
+Sie sendet Informationen für die folgenden Ereignisse:  
 - Touch-Druck
 - Touch-Loslassen
 - Wischen nach links (Loslassen)
@@ -203,15 +201,15 @@ So können Sie alle Ereignisse einfach in Home Assistant verarbeiten.
 Das Langzeitdruck-Ereignis kann derzeit nur über die on_long_touch_release-Aktion verwendet werden.  
   
 ### LEDs
-Auf der Platine befinden sich 28 adressierbare LEDs. Sie sind als Neopixel-Plattform mit 2 vordefinierten Effekten implementiert.
-
+Auf der Platine befinden sich 28 adressierbare LEDs. Sie sind als Neopixel-Plattform mit 2 vordefinierten Effekten implementiert.  
+  
 **Effekte:**
 - Rainbow (Regenbogen)
 - Pulse (Pulsieren)
 
 ### Media Player
-Ich habe den Media-Player-Komponenten im Paket hinzugefügt. Derzeit ist er jedoch nicht wirklich verwendbar.
-Er erzeugt nur viel Lärm. Ich werde das Paket aktualisieren, wenn ich es ordnungsgemäß zum Funktionieren bringe.
+Ich habe den Media-Player-Komponenten im Paket hinzugefügt. Derzeit ist er jedoch nicht wirklich verwendbar.  
+Er erzeugt nur viel Lärm. Ich werde das Paket aktualisieren, wenn ich es ordnungsgemäß zum Funktionieren bringe.  
   
 ### Vibrationsmotor  
   
@@ -243,14 +241,15 @@ Sie können alle Komponenten anhand ihrer ID verwenden.
 ### Audio
 **media_player:** media_out  
 **i2s_audio:** audio_i2s  
-
+  
 ### Beispielcode zur Verwendung der Komponenten anhand ihrer IDs
-Dies ist ein einfaches Beispiel, um die in der Konfiguration definierten LEDs ein- und auszuschalten.
-*Bitte beachten Sie, dass dies nur ein Beispiel für die Verwendung von IDs ist. Das Ereignis `on_release` wird nicht immer ausgelöst, wenn Sie an einer anderen Stelle auf der Oberfläche loslassen, als Sie gedrückt haben. In diesem Fall werden die LEDs nicht ausgeschaltet.*
+Dies ist ein einfaches Beispiel, um die in der Konfiguration definierten LEDs ein- und auszuschalten.  
+*Bitte beachten Sie, dass dies nur ein Beispiel für die Verwendung von IDs ist. Das Ereignis `on_release` wird nicht immer ausgelöst, wenn Sie an einer anderen Stelle auf der Oberfläche loslassen, als Sie gedrückt haben. In diesem Fall werden die LEDs nicht ausgeschaltet.*  
 ```
   on_press:
     - light.turn_on: leds
 
   on_release:
     - light.turn_off: leds
-```
+```  
+  
