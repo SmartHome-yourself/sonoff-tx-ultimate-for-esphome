@@ -1,3 +1,8 @@
+# Choose language:
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/master/README.md) 
+[![de](https://img.shields.io/badge/lang-de-blue.svg)](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/master/README.de.md)
+
+
 # SONOFF TX Ultimate for ESPHome (Custom Component)
 This is an ESPHome custom component for the SONOFF TX Ultimate Smart Switch.  
 It gives you the ability to use your Switch with ESPHome, including the main features.
