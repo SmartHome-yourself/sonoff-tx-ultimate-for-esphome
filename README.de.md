@@ -24,6 +24,34 @@ Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Int
   
 &nbsp;  
   
+# Minimal Konfiguration
+```
+substitutions:
+  name: "shys-tx-ultimate"
+  friendly_name: "SHYS TX Ultimate"
+  relay_count: "2"
+
+packages:
+  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
+  
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
+api:
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  
+  ap:
+    ssid: ${friendly_name} AP
+    password: "top_secret"
+```  
+  
+&nbsp;  
+  
 # Konfiguration
 Alle Ersetzungen sind optional, aber ich empfehle, mindestens `name`, `friendly_name` und `relay_count` anzugeben.  
 Die Pins sind bereits in der Hardware angegeben und müssen daher nicht geändert werden.  
@@ -140,35 +168,12 @@ Wird ausgelöst, wenn Sie einen Punkt auf der Oberfläche länger als 5 Sekunden
 &nbsp;  
   
 # Beispielcode
-Dies ist ein Beispiel für die kleinste Konfiguration des Sonoff TX Ultimate, einschließlich einer eigenen Aktion.  
-Es implementiert die Logik des Pakets, um die Hauptfunktionen des Sonoff TX Ultimate-Schalters zu verwenden.  
+Dies ist ein Beispiel für eine eigenen Touch Aktion.  
+Es erweitert die Hauptfunktionen des Sonoff TX Ultimate-Schalters um eine eigenen Log-Ausgabe beim Druck auf die Touch-Fläche.  
   
-Es liegt an Ihnen, was Sie in diesen Ereignissen tun. 
+Es steht Ihnen natürlich vollkommen frei, was Sie in den Ereignissen ausführen.  
 
 ```
-substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
-  relay_count: "2"
-
-packages:
-  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
-  
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
-
-api:
-ota:
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  
-  ap:
-    ssid: ${friendly_name} AP
-    password: "top_secret"
-
 tx_ultimate_touch:
   id: tx_touch
   uart: my_uart
