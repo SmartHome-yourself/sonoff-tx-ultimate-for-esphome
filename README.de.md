@@ -1,3 +1,8 @@
+# Choose language:
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/master/README.md) 
+[![de](https://img.shields.io/badge/lang-de-blue.svg)](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/master/README.de.md)
+
+
 # SONOFF TX Ultimate für ESPHome (Benutzerdefinierte Komponente)
 Dies ist eine benutzerdefinierte ESPHome-Komponente für den SONOFF TX Ultimate Smart Switch.  
 Sie ermöglicht Ihnen die Verwendung Ihres Schalters mit ESPHome und umfasst die wichtigsten Funktionen.
