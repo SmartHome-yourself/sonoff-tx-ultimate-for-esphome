@@ -4,6 +4,11 @@ It gives you the ability to use your Switch with ESPHome, including the main fea
 Thanks to the on_... actions, you can implement your own functions quickly and easily.  
 Flashing via the web installer and then adopting the device in Home Assistant is sufficient to use the pure basic functionalities.
 
+Detected touch events are visualized by short LED signals.  
+A short touch on one of the touch surfaces switches the respective relay.
+Swipe, long and multi-touch events can be implemented using the on_... actions, for example.
+Alternatively, you can also react to swipe and multi-touch via the binary sensors in Home Assistant automations.  
+  
 ## Web Installer
 You can find the Webinstaller on the Project-Page:  
 https://smarthomeyourself.de/sonoff-tx  
@@ -15,6 +20,8 @@ The screenshot shows an example of the device in Home Assistant after integratio
 &nbsp;  
   
 # Configuration
+All substitutions are optional, but I recommend specifying at least name, friendly_name, and relay_count.  
+The pins are already specified by the hardware and therefore do not actually have to be changed.  
 
 ```
 substitutions:
