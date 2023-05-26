@@ -24,6 +24,36 @@ The screenshot shows an example of the device in Home Assistant after integratio
   
 &nbsp;  
   
+# Minimal code
+This is the needed code to use the tx ultimate with this component. 
+You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).
+```
+substitutions:
+  name: "shys-tx-ultimate"
+  friendly_name: "SHYS TX Ultimate"
+  relay_count: "2"
+
+packages:
+  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
+  
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
+api:
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  
+  ap:
+    ssid: ${friendly_name} AP
+    password: "top_secret"
+```  
+  
+&nbsp;  
+  
 # Configuration
 All substitutions are optional, but I recommend specifying at least name, friendly_name, and relay_count.  
 The pins are already specified by the hardware and therefore do not actually have to be changed.  
@@ -138,35 +168,12 @@ Is triggered, if you touch a point on the surface longer than 5 seconds.
 &nbsp;  
   
 # Example Code
-This is an example for the smallest sonoff tx ultimate configuration including an own action-event.  
-It implement the logic of the package to use the main functionality of the sonoff tx ultimate switch. 
+This is an example of a custom touch action.  
+It extends the main functionalities of the Sonoff TX Ultimate switch by adding a custom log output when the touch surface is pressed.  
   
-It's up to you, what you do in this events. 
+Feel free to customize the actions according to your needs.  
 
 ```
-substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
-  relay_count: "2"
-
-packages:
-  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
-  
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
-
-api:
-ota:
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  
-  ap:
-    ssid: ${friendly_name} AP
-    password: "top_secret"
-
 tx_ultimate_touch:
   id: tx_touch
   uart: my_uart
@@ -174,9 +181,9 @@ tx_ultimate_touch:
   on_press:
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "My Event: Position: %d / State: %d", touch.x, touch.state);
-```
-
-
+```  
+  
+  
 # Components
 
 ### Relais
