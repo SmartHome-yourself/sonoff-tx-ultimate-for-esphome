@@ -1,6 +1,19 @@
-# sonoff-tx-ultimate-for-esphome
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)
+# SONOFF TX Ultimate for ESPHome (Custom Component)
+This is an ESPHome custom component for the SONOFF TX Ultimate Smart Switch.  
+It gives you the ability to use your Switch with ESPHome, including the main features.
+Thanks to the on_... actions, you can implement your own functions quickly and easily.  
+Flashing via the web installer and then adopting the device in Home Assistant is sufficient to use the pure basic functionalities.
 
+## Web Installer
+You can find the Webinstaller on the Project-Page:  
+https://smarthomeyourself.de/sonoff-tx  
+  
+## Home Assistant device
+The screenshot shows an example of the device in Home Assistant after integration.  
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)  
+  
+&nbsp;  
+  
 # Configuration
 
 ```
@@ -150,3 +163,80 @@ tx_ultimate_touch:
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "My Event: Position: %d / State: %d", touch.x, touch.state);
 ```
+
+
+# Components
+
+### Relais
+Depending on the switch variant, the TX has 1-3 relays installed. Therefore there are 3 switches for the relays.  
+According to the documentation, there is also a GPIO for a 4th relay, but I am not aware of any 4-way variant.  
+
+### Touchsurface
+The touch surface communicate over uart with the esp. 
+It send information for the following events:
+- touch press
+- touch release
+- swipe left (release)
+- swipe right (release)
+- touch on more than one sensor-point (release)
+- long press (5 seconds)
+  
+### Binary sensors
+I've added one binary sensor for each type of touch event, except the long press.  
+So you can handle all events easy in Home Assistant.  
+The long press event is only usable by using the on_long_touch_release action at the moment.  
+  
+### LEDs
+There are 28 addressable LEDs on board. They are implemented as neopixel platform with 2 predefined effects.
+
+**Effects:**
+- Rainbow
+- Pulse
+
+### Media player
+I've added the media_player component in the package. But currently it is not really usable.
+It only produce a lot of noise. I'll update the package if I get it to work propperly.
+  
+### Vibration motor  
+  
+## Component IDs
+You can use all components based on their ID.  
+  
+### Binary Sensors
+**Touchfield 1:** touchfield_1  
+**Touchfield 2:** touchfield_2  
+**Touchfield 3:** touchfield_3  
+**Swipe left:** swipe_left  
+**Swipe right:** swipe_right  
+**Multi-touch:** multi_touch  
+  
+### Switches
+**Relay 1:** relay_1  
+**Relay 2:** relay_2  
+**Relay 3:** relay_3  
+**Vibration motor:** vibra  
+**Power amplifier:** pa_power  
+  
+### Touch Input
+**tx_ultimate_touch:** tx_touch  
+**uart:** my_uart  
+  
+### LED Lights
+**28 RGBIC LEDs:** leds  
+  
+### Audio
+**media_player:** media_out  
+**i2s_audio:** audio_i2s  
+  
+  
+### Example code to use the components based on their IDs
+This is a simple example to turn the LEDs on and off, which are defined in the package. 
+*Remember, that this is just an example for ID usage. The on_release is not always triggered. (If you release on another point on the surface as you press). Then the LEDs won't turn off.*
+```
+  on_press:
+    - light.turn_on: leds
+	
+  on_release:
+    - light.turn_off: leds
+```
+
