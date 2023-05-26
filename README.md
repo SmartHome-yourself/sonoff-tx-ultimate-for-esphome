@@ -14,17 +14,32 @@ A short touch on one of the touch surfaces switches the respective relay.
 Swipe, long and multi-touch events can be implemented using the on_... actions, for example.
 Alternatively, you can also react to swipe and multi-touch via the binary sensors in Home Assistant automations.  
   
+&nbsp;    
+  
+# Home Assistant device
+The screenshot shows an example of the device in Home Assistant after integration.  
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)  
+  
+&nbsp;    
+  
+# Installation 
 ## Web Installer
 You can find the Webinstaller on the Project-Page:  
 https://smarthomeyourself.de/sonoff-tx  
   
-## Home Assistant device
-The screenshot shows an example of the device in Home Assistant after integration.  
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)  
+## Use in ESPHome without Webinstall
+You can create your Project yourself without usage of my package by copy the [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) into your project.  
+If you want to use the custom component localy, you can copy the [tx_ultimate_touch folder](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) into your esphome directory or some subfolder and include it local.
+Then you only have to change the source of the external_components entry.
+
+**Example for local custom component**
+```
+external_components:
+  - source: /config/esphome/my_components
+    components: [tx_ultimate_touch]
+```  
   
-&nbsp;  
-  
-# Minimal code
+## Minimal code
 This is the needed code to use the tx ultimate with this component. 
 You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).
 ```
