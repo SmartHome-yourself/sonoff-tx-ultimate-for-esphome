@@ -23,6 +23,8 @@ substitutions:
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
   audio_sdata_pin: GPIO15
+  
+  touchpanel_power_pin: GPIO5
 
 esphome:
   name: ${name}
@@ -59,7 +61,7 @@ esp32:
     type: arduino
 
 logger:
-  hardware_uart: UART2
+#  hardware_uart: UART2
   level: DEBUG
   logs:
     binary_sensor: INFO
@@ -86,11 +88,13 @@ improv_serial:
 captive_portal:
 
 external_components:
+#  - source: /config/esphome/my_components
   - source:
       type: git
       url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
       ref: main
     components: [tx_ultimate_touch]
+    
 
 binary_sensor:
   - platform: template
@@ -98,30 +102,59 @@ binary_sensor:
     id: touchfield_1
     on_press:
       - switch.toggle: relay_1
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: touchfield_1
+          state: OFF
 
   - platform: template
     name: "Touchfield 2"
     id: touchfield_2
     on_press:
       - switch.toggle: relay_2
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: touchfield_2
+          state: OFF
 
   - platform: template
     name: "Touchfield 3"
     id: touchfield_3
     on_press:
       - switch.toggle: relay_3
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: touchfield_3
+          state: OFF
 
   - platform: template
     name: "Swipe left"
     id: swipe_left
-
+    on_press:
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: swipe_left
+          state: OFF
+        
   - platform: template
     name: "Swipe_right"
     id: swipe_right
+    on_press:
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: swipe_right
+          state: OFF
 
   - platform: template
     name: "Multi Touch"
     id: multi_touch
+    on_press:
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: multi_touch
+          state: OFF
+
+
 
 switch:
   - platform: gpio
@@ -147,12 +180,25 @@ switch:
     pin: ${vibra_motor_pin}
     name: "${friendly_name} Vibration"
     restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: ${vibra_time}
+      - switch.turn_off: vibra
 
   - platform: gpio
     id: pa_power
     pin: ${pa_power_pin}
     name: "PA Power"
     restore_mode: ALWAYS_ON
+
+  - platform: gpio
+    name: "touch panel power"
+    pin:
+      number: ${touchpanel_power_pin}
+      inverted: true
+    id: touch_power
+    internal: true
+    restore_mode: RESTORE_DEFAULT_ON
+
 
 light:
   - platform: neopixelbus
@@ -173,6 +219,7 @@ light:
           transition_length: 1.4s
           update_interval: 1s
 
+
 media_player:
   - platform: i2s_audio
     id: media_out
@@ -186,6 +233,7 @@ i2s_audio:
   id: audio_i2s
   i2s_lrclk_pin: ${audio_lrclk_pin}
   i2s_bclk_pin: ${audio_bclk_pin}
+
 
 uart:
   tx_pin: ${uart_tx_pin}
@@ -228,8 +276,6 @@ tx_ultimate_touch:
         pos: !lambda "return touch.x;"
 
     - switch.turn_on: vibra
-    - delay: ${vibra_time}
-    - switch.turn_off: vibra
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_release", "Release Position: %d / State: %d", touch.x, touch.state);
@@ -241,16 +287,10 @@ tx_ultimate_touch:
         state: !lambda "return touch.state;"
 
     - switch.turn_on: vibra
-    - delay: ${vibra_time}
-    - switch.turn_off: vibra
 
     - binary_sensor.template.publish:
         id: swipe_left
         state: ON
-    - delay: ${button_on_time}
-    - binary_sensor.template.publish:
-        id: swipe_left
-        state: OFF
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_swipe_left", "Swipe Left Position: %d / State: %d", touch.x, touch.state);
@@ -262,16 +302,10 @@ tx_ultimate_touch:
         state: !lambda "return touch.state;"
 
     - switch.turn_on: vibra
-    - delay: ${vibra_time}
-    - switch.turn_off: vibra
 
     - binary_sensor.template.publish:
         id: swipe_right
         state: ON
-    - delay: ${button_on_time}
-    - binary_sensor.template.publish:
-        id: swipe_right
-        state: OFF
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_swipe_right", "Swipe Right Position: %d / State: %d", touch.x, touch.state);
@@ -283,16 +317,10 @@ tx_ultimate_touch:
         state: !lambda "return touch.state;"
 
     - switch.turn_on: vibra
-    - delay: ${vibra_time}
-    - switch.turn_off: vibra
 
     - binary_sensor.template.publish:
         id: multi_touch
         state: ON
-    - delay: ${button_on_time}
-    - binary_sensor.template.publish:
-        id: multi_touch
-        state: OFF
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_full_touch_release", "Full Touch Release Position: %d / State: %d", touch.x, touch.state);
@@ -304,8 +332,6 @@ tx_ultimate_touch:
         state: !lambda "return touch.state;"
 
     - switch.turn_on: vibra
-    - delay: ${vibra_time}
-    - switch.turn_off: vibra
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_long_touch_release", "Long Touch Release Position: %d / State: %d", touch.x, touch.state);
@@ -323,10 +349,6 @@ script:
             - binary_sensor.template.publish:
                 id: touchfield_1
                 state: ON
-            - delay: ${button_on_time}
-            - binary_sensor.template.publish:
-                id: touchfield_1
-                state: OFF
 
       - if:
           condition:
@@ -339,18 +361,11 @@ script:
                   - binary_sensor.template.publish:
                       id: touchfield_1
                       state: ON
-                  - delay: ${button_on_time}
-                  - binary_sensor.template.publish:
-                      id: touchfield_1
-                      state: OFF
+
                 else:
                   - binary_sensor.template.publish:
                       id: touchfield_2
                       state: ON
-                  - delay: ${button_on_time}
-                  - binary_sensor.template.publish:
-                      id: touchfield_2
-                      state: OFF
 
       - if:
           condition:
@@ -363,10 +378,7 @@ script:
                   - binary_sensor.template.publish:
                       id: touchfield_1
                       state: ON
-                  - delay: ${button_on_time}
-                  - binary_sensor.template.publish:
-                      id: touchfield_1
-                      state: OFF
+
                 else:
                   - if:
                       condition:
@@ -375,18 +387,11 @@ script:
                         - binary_sensor.template.publish:
                             id: touchfield_2
                             state: ON
-                        - delay: ${button_on_time}
-                        - binary_sensor.template.publish:
-                            id: touchfield_2
-                            state: OFF
+
                       else:
                         - binary_sensor.template.publish:
                             id: touchfield_3
                             state: ON
-                        - delay: ${button_on_time}
-                        - binary_sensor.template.publish:
-                            id: touchfield_3
-                            state: OFF
 
   - id: touch_led_marker
     mode: restart

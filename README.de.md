@@ -13,18 +13,39 @@ Erkannte Touch-Ereignisse werden durch kurze LED-Signale visualisiert.
 Eine kurze Berührung einer der Touch-Oberflächen schaltet das entsprechende Relais um.
 Swipe-, Lang- und Mehrfach-Touch-Ereignisse können mithilfe der on_... Aktionen implementiert werden.
 Alternativ können Sie auch auf Swipe- und Mehrfach-Touch-Ereignisse über die binären Sensoren in Home Assistant-Automatisierungen reagieren.
-
-## Web-Installer
-Sie finden den Webinstaller auf der Projektseite:  
-[https://smarthomeyourself.de/sonoff-tx](https://smarthomeyourself.de/sonoff-tx)
+  
+&nbsp;  
   
 ## Home Assistant-Gerät
 Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Integration.  
 ![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)  
   
 &nbsp;  
+    
+# Installation 
+## Web-Installer 
+Sie finden den Webinstaller auf der Projektseite:  
+[https://smarthomeyourself.de/sonoff-tx](https://smarthomeyourself.de/sonoff-tx)
   
+&nbsp;  
+  
+## Verwendung in ESPHome ohne Webinstaller
+Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) in Ihr Projekt kopieren.  
+Wenn Sie die benutzerdefinierte Komponente lokal verwenden möchten, können Sie den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in Ihr ESPHome-Verzeichnis oder einen Unterordner kopieren und lokal einbinden.
+Dann müssen Sie nur noch die Quelle des external_components-Eintrags ändern.
+
+**Beispiel für lokale benutzerdefinierte Komponente**
+```
+external_components:
+  - source: /config/esphome/my_components
+    components: [tx_ultimate_touch]
+```  
+  
+&nbsp;  
+    
 # Minimal Konfiguration
+Dies ist der benötigte Code, um das tx ultimate mit dieser Komponente zu verwenden.  
+Sie können dies als Basis verwenden, um Ihre eigenen Funktionen zu implementieren oder es so lassen und die Hauptfunktionen nutzen (Relais bei Berührung schalten).  
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -56,7 +77,7 @@ wifi:
 Alle Ersetzungen sind optional, aber ich empfehle, mindestens `name`, `friendly_name` und `relay_count` anzugeben.  
 Die Pins sind bereits in der Hardware angegeben und müssen daher nicht geändert werden.  
 
-```markdown
+```
 substitutions:
   name: "sonoff-tx-ultimate"
   friendly_name: "TX Ultimate"
@@ -82,6 +103,8 @@ substitutions:
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
   audio_sdata_pin: GPIO15
+  
+  touchpanel_power_pin: GPIO5
 ```
 
 **name** _(Standard: sonoff-tx-ultimate)_   
@@ -102,8 +125,6 @@ Gibt an, wie lange die binären Sensoren als Signal für eine Berührung aktiv b
   
 **relais_1_pin** _(Standard: GPIO18)_  
 Legen Sie den GPIO-Pin für das erste Relais fest.
-
-  
   
 **relais_2_pin** _(Standard: GPIO17)_  
 Legen Sie den GPIO-Pin für das zweite Relais fest.  

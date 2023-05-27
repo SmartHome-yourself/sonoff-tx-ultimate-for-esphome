@@ -23,10 +23,12 @@ The screenshot shows an example of the device in Home Assistant after integratio
 &nbsp;    
   
 # Installation 
-## Web Installer
+## Web Installer 
 You can find the Webinstaller on the Project-Page:  
 https://smarthomeyourself.de/sonoff-tx  
   
+&nbsp;  
+
 ## Use in ESPHome without Webinstall
 You can create your Project yourself without usage of my package by copy the [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) into your project.  
 If you want to use the custom component localy, you can copy the [tx_ultimate_touch folder](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) into your esphome directory or some subfolder and include it local.
@@ -39,9 +41,11 @@ external_components:
     components: [tx_ultimate_touch]
 ```  
   
+&nbsp;  
+  
 ## Minimal code
 This is the needed code to use the tx ultimate with this component. 
-You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).
+You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).  
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -99,6 +103,8 @@ substitutions:
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
   audio_sdata_pin: GPIO15
+  
+  touchpanel_power_pin: GPIO5
 ```
 
 **name** _(Default: sonoff-tx-ultimate)_   
@@ -261,7 +267,6 @@ You can use all components based on their ID.
 ### Audio
 **media_player:** media_out  
 **i2s_audio:** audio_i2s  
-  
   
 ### Example code to use the components based on their IDs
 This is a simple example to turn the LEDs on and off, which are defined in the package. 
