@@ -4,8 +4,12 @@ substitutions:
 
   relay_count: "2"
 
-  vibra_time: 100ms
+  vibra_time: 150ms
   button_on_time: 200ms
+
+  toggle_relais_1_on_touch: "true"
+  toggle_relais_2_on_touch: "true"
+  toggle_relais_3_on_touch: "true"
 
   relais_1_pin: GPIO18
   relais_2_pin: GPIO17
@@ -99,7 +103,11 @@ binary_sensor:
     name: "Touchfield 1"
     id: touchfield_1
     on_press:
-      - switch.toggle: relay_1
+      - if:
+          condition:
+            lambda: "return ${toggle_relais_1_on_touch};"
+          then:
+            - switch.toggle: relay_1
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_1
@@ -109,7 +117,11 @@ binary_sensor:
     name: "Touchfield 2"
     id: touchfield_2
     on_press:
-      - switch.toggle: relay_2
+      - if:
+          condition:
+            lambda: "return ${toggle_relais_2_on_touch};"
+          then:
+            - switch.toggle: relay_2
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_2
@@ -119,7 +131,11 @@ binary_sensor:
     name: "Touchfield 3"
     id: touchfield_3
     on_press:
-      - switch.toggle: relay_3
+      - if:
+          condition:
+            lambda: "return ${toggle_relais_3_on_touch};"
+          then:
+            - switch.toggle: relay_3
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_3

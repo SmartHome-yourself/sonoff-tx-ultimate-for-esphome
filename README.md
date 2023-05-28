@@ -86,6 +86,10 @@ substitutions:
 
   vibra_time: 100ms
   button_on_time: 200ms
+  
+  toggle_relais_1_on_touch: "true"
+  toggle_relais_2_on_touch: "true"
+  toggle_relais_3_on_touch: "true"
 
   relais_1_pin: GPIO18
   relais_2_pin: GPIO17
@@ -122,6 +126,21 @@ Specifies the duration of the vibration signal on touch.
   
 **button_on_time** _(Default: 200ms)_  
 Specifies how long the binary sensors should remain active as a signal for a touch input.  
+  
+**toggle_relais_1_on_touch** _(Default: "true")_  
+Specifies whether relay 1 should be permanently linked to touchfield 1.  
+If set to true, the relay will be triggered every time touchfield 1 is pressed.  
+If set to false, only the touch event will be transmitted, but the relay will not be triggered.  
+  
+**toggle_relais_2_on_touch** _(Default: "true")_  
+Specifies whether relay 2 should be permanently linked to touchfield 2.  
+If set to true, the relay will be triggered every time touchfield 2 is pressed.  
+If set to false, only the touch event will be transmitted, but the relay will not be triggered.  
+  
+**toggle_relais_3_on_touch** _(Default: "true")_  
+Specifies whether relay 3 should be permanently linked to touchfield 3.  
+If set to true, the relay will be triggered every time touchfield 3 is pressed.  
+If set to false, only the touch event will be transmitted, but the relay will not be triggered.  
   
 **relais_1_pin** _(Default: GPIO18)_  
 Set the GPIO pin for the first relay.  
