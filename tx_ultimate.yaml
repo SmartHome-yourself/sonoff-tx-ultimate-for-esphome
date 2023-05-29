@@ -7,14 +7,14 @@ substitutions:
   vibra_time: 150ms
   button_on_time: 200ms
 
-  toggle_relais_1_on_touch: "true"
-  toggle_relais_2_on_touch: "true"
-  toggle_relais_3_on_touch: "true"
+  toggle_relay_1_on_touch: "true"
+  toggle_relay_2_on_touch: "true"
+  toggle_relay_3_on_touch: "true"
 
-  relais_1_pin: GPIO18
-  relais_2_pin: GPIO17
-  relais_3_pin: GPIO27
-  relais_4_pin: GPIO23
+  relay_1_pin: GPIO18
+  relay_2_pin: GPIO17
+  relay_3_pin: GPIO27
+  relay_4_pin: GPIO23
 
   vibra_motor_pin: GPIO21
   pa_power_pin: GPIO26
@@ -107,7 +107,7 @@ binary_sensor:
     on_press:
       - if:
           condition:
-            lambda: "return ${toggle_relais_1_on_touch};"
+            lambda: "return ${toggle_relay_1_on_touch};"
           then:
             - switch.toggle: relay_1
       - delay: ${button_on_time}
@@ -121,7 +121,7 @@ binary_sensor:
     on_press:
       - if:
           condition:
-            lambda: "return ${toggle_relais_2_on_touch};"
+            lambda: "return ${toggle_relay_2_on_touch};"
           then:
             - switch.toggle: relay_2
       - delay: ${button_on_time}
@@ -135,7 +135,7 @@ binary_sensor:
     on_press:
       - if:
           condition:
-            lambda: "return ${toggle_relais_3_on_touch};"
+            lambda: "return ${toggle_relay_3_on_touch};"
           then:
             - switch.toggle: relay_3
       - delay: ${button_on_time}
@@ -176,19 +176,19 @@ switch:
   - platform: gpio
     id: relay_1
     name: "${friendly_name} L1"
-    pin: ${relais_1_pin}
+    pin: ${relay_1_pin}
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_2
     name: "${friendly_name} L2"
-    pin: ${relais_2_pin}
+    pin: ${relay_2_pin}
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_3
     name: "${friendly_name} L3"
-    pin: ${relais_3_pin}
+    pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio

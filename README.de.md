@@ -15,6 +15,19 @@ Swipe-, Lang- und Mehrfach-Touch-Ereignisse können mithilfe der on_... Aktionen
 Alternativ können Sie auch auf Swipe- und Mehrfach-Touch-Ereignisse über die binären Sensoren in Home Assistant-Automatisierungen reagieren.
   
 &nbsp;  
+
+## Ausführliches Video zur TX Ultimate - Custom Component
+[![SONOFF TX Ultimate - Custom Component](http://img.youtube.com/vi/naDLhX89enQ/0.jpg)](https://www.youtube.com/watch?v=naDLhX89enQ "SONOFF TX Ultimate - Custom Component")
+
+&nbsp;  
+  
+## TX Ultimate kaufen
+Wenn Ihr mein Projekt unterstützen wollt, bestellt einfach eure nächsten SONOFF Geräte über den folgenden Affiliate Link:  
+http://itead.cc/product/sonoff-tx-ultimate-smart-touch-wall-switch/ref/85/?campaign=tx-comp  
+  
+Mit dem Code **DANIELSCHSONOFF** erhaltet Ihr sogar noch einmal 10% auf eure Bestellung.  
+  
+&nbsp;  
   
 ## Home Assistant-Gerät
 Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Integration.  
@@ -23,29 +36,12 @@ Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Int
 &nbsp;  
     
 # Installation 
-## Web-Installer 
-Sie finden den Webinstaller auf der Projektseite:  
-[https://smarthomeyourself.de/sonoff-tx](https://smarthomeyourself.de/sonoff-tx)
-  
-&nbsp;  
-  
-## Verwendung in ESPHome ohne Webinstaller
-Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) in Ihr Projekt kopieren.  
-Wenn Sie die benutzerdefinierte Komponente lokal verwenden möchten, können Sie den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in Ihr ESPHome-Verzeichnis oder einen Unterordner kopieren und lokal einbinden.
-Dann müssen Sie nur noch die Quelle des external_components-Eintrags ändern.
 
-**Beispiel für lokale benutzerdefinierte Komponente**
-```
-external_components:
-  - source: /config/esphome/my_components
-    components: [tx_ultimate_touch]
-```  
-  
 &nbsp;  
     
-# Minimal Konfiguration
+## Minimal Konfiguration
 Dies ist der benötigte Code, um das tx ultimate mit dieser Komponente zu verwenden.  
-Sie können dies als Basis verwenden, um Ihre eigenen Funktionen zu implementieren oder es so lassen und die Hauptfunktionen nutzen (Relais bei Berührung schalten).  
+Sie können dies als Basis verwenden, um Ihre eigenen Funktionen zu implementieren oder es so lassen und einfach die Hauptfunktionen nutzen (Relais bei Berührung schalten).  
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -70,6 +66,18 @@ wifi:
     ssid: ${friendly_name} AP
     password: "top_secret"
 ```  
+    
+## Lokale Verwendung in ESPHome
+Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) in Ihr Projekt kopieren.  
+Wenn Sie die benutzerdefinierte Komponente lokal verwenden möchten, können Sie den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in Ihr ESPHome-Verzeichnis oder einen Unterordner kopieren und lokal einbinden.
+Dann müssen Sie nur noch die Quelle des external_components-Eintrags ändern.
+
+**Beispiel für lokale benutzerdefinierte Komponente**
+```
+external_components:
+  - source: /config/esphome/my_components
+    components: [tx_ultimate_touch]
+```  
   
 &nbsp;  
   
@@ -87,14 +95,14 @@ substitutions:
   vibra_time: 100ms
   button_on_time: 200ms
   
-  toggle_relais_1_on_touch: "true"
-  toggle_relais_2_on_touch: "true"
-  toggle_relais_3_on_touch: "true"
+  toggle_relay_1_on_touch: "true"
+  toggle_relay_2_on_touch: "true"
+  toggle_relay_3_on_touch: "true"
 
-  relais_1_pin: GPIO18
-  relais_2_pin: GPIO17
-  relais_3_pin: GPIO27
-  relais_4_pin: GPIO23
+  relay_1_pin: GPIO18
+  relay_2_pin: GPIO17
+  relay_3_pin: GPIO27
+  relay_4_pin: GPIO23
 
   vibra_motor_pin: GPIO21
   pa_power_pin: GPIO26
@@ -127,31 +135,31 @@ Gibt die Dauer des Vibrationszeichens bei Berührung an.
 **button_on_time** _(Standard: 200ms)_  
 Gibt an, wie lange die binären Sensoren als Signal für eine Berührung aktiv bleiben sollen.  
   
-**toggle_relais_1_on_touch** _(Standard: "true")_  
+**toggle_relay_1_on_touch** _(Standard: "true")_  
 Legt fest, ob das Relais 1 fest an das Touchfeld 1 gekoppelt sein soll.  
 Bei true wird das Relais bei jedem Druck auf Touchfeld 1 geschaltet.  
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
   
-**toggle_relais_2_on_touch** _(Standard: "true")_  
+**toggle_relay_2_on_touch** _(Standard: "true")_  
 Legt fest, ob das Relais 2 fest an das Touchfeld 2 gekoppelt sein soll.  
 Bei true wird das Relais bei jedem Druck auf Touchfeld 2 geschaltet.  
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
   
-**toggle_relais_3_on_touch** _(Standard: "true")_  
+**toggle_relay_3_on_touch** _(Standard: "true")_  
 Legt fest, ob das Relais 3 fest an das Touchfeld 3 gekoppelt sein soll.  
 Bei true wird das Relais bei jedem Druck auf Touchfeld 3 geschaltet.  
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
   
-**relais_1_pin** _(Standard: GPIO18)_  
+**relay_1_pin** _(Standard: GPIO18)_  
 Legen Sie den GPIO-Pin für das erste Relais fest.
   
-**relais_2_pin** _(Standard: GPIO17)_  
+**relay_2_pin** _(Standard: GPIO17)_  
 Legen Sie den GPIO-Pin für das zweite Relais fest.  
   
-**relais_3_pin** _(Standard: GPIO27)_  
+**relay_3_pin** _(Standard: GPIO27)_  
 Legen Sie den GPIO-Pin für das dritte Relais fest.  
   
-**relais_4_pin** _(Standard: GPIO23)_  
+**relay_4_pin** _(Standard: GPIO23)_  
 Legen Sie den GPIO-Pin für das vierte Relais fest.  
 (Bisher habe ich keine 4-Relais-Variante gesehen. Es wurde jedoch in der Dokumentation erwähnt, also ist es hier aufgeführt.)  
   
