@@ -66,7 +66,9 @@ wifi:
     ssid: ${friendly_name} AP
     password: "top_secret"
 ```  
-    
+  
+&nbsp;  
+  
 ## Lokale Verwendung in ESPHome
 Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) in Ihr Projekt kopieren.  
 Wenn Sie die benutzerdefinierte Komponente lokal verwenden möchten, können Sie den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in Ihr ESPHome-Verzeichnis oder einen Unterordner kopieren und lokal einbinden.
@@ -92,12 +94,22 @@ substitutions:
 
   relay_count: "2"
 
-  vibra_time: 100ms
-  button_on_time: 200ms
-  
   toggle_relay_1_on_touch: "true"
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
+
+  vibra_time: 150ms
+  button_on_time: 500ms
+
+  button_brightness: "0.7"
+  button_color: "{0,0,100}"
+
+  nightlight: "on"
+  nightlight_brightness: "0.2"
+  nightlight_color: "{80,70,0}"
+
+  latitude: "50.123456°"
+  longitude: "5.654321°"
 
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
@@ -108,14 +120,15 @@ substitutions:
   pa_power_pin: GPIO26
 
   led_pin: GPIO13
+  status_led_pin: GPIO33
 
-  uart_tx_pin: GPIO09
-  uart_rx_pin: GPIO10
+  uart_tx_pin: GPIO19
+  uart_rx_pin: GPIO22
 
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
   audio_sdata_pin: GPIO15
-  
+
   touchpanel_power_pin: GPIO5
 ```
 
@@ -150,8 +163,32 @@ Legt fest, ob das Relais 3 fest an das Touchfeld 3 gekoppelt sein soll.
 Bei true wird das Relais bei jedem Druck auf Touchfeld 3 geschaltet.  
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
   
+**button_brightness** _(Standard: "0.7")_  
+Legt die Helligkeit fest, mit der angezeigt wird, dass ein Relais eingeschaltet ist.  
+  
+**button_color** _(Standard: "{0,0,100}")_  
+Legt die Farbe fest, in der unter der Schaltfläche angezeigt werden soll, dass das Relais eingeschaltet ist.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**nightlight** _(Standard: "on")_  
+Gibt an, ob das Nachtlicht nach Sonnenuntergang automatisch eingeschaltet werden soll.  
+Damit die automatische an/abschaltung funktioniert, muss der eigene Standort über Längen- und Breitengrad mit latitude und longitude angegeben werden!
+  
+**nightlight_brightness** _(Standard: "0.2")_  
+Legt die Helligkeit fest, mit der das Nachtlicht leuchten soll.  
+  
+**nightlight_color** _(Standard: "{80,70,0}")_  
+Legt die Farbe fest, in der das Nachtlicht leuchten soll.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**latitude** _(Standard: "50.123456°")_  
+Legt den Breitengrad des eigenen Standorts fest, um Sonnenauf- und untergang zu ermitteln  
+
+**longitude** _(Standard: "5.654321°")_  
+Legt den Längengrad des eigenen Standorts fest, um Sonnenauf- und untergang zu ermitteln  
+  
 **relay_1_pin** _(Standard: GPIO18)_  
-Legen Sie den GPIO-Pin für das erste Relais fest.
+Legen Sie den GPIO-Pin für das erste Relais fest.  
   
 **relay_2_pin** _(Standard: GPIO17)_  
 Legen Sie den GPIO-Pin für das zweite Relais fest.  
@@ -276,13 +313,14 @@ Sie können alle Komponenten anhand ihrer ID verwenden.
 **Wischen nach links:** swipe_left  
 **Wischen nach rechts:** swipe_right  
 **Mehrfach-Touch:** multi_touch  
+**Langer-Touch:** long_press  
   
 ### Schalter
 **Relais 1:** relay_1  
 **Relais 2:** relay_2  
 **Relais 3:** relay_3  
 **Vibrationsmotor:** vibra  
-**Leistungsverstärker:** pa_power  
+**Nachtlicht** nightlight_active  
   
 ### Touch-Eingabe
 **tx_ultimate_touch:** tx_touch  

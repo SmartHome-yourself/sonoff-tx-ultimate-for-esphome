@@ -94,12 +94,22 @@ substitutions:
 
   relay_count: "2"
 
-  vibra_time: 100ms
-  button_on_time: 200ms
-  
   toggle_relay_1_on_touch: "true"
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
+
+  vibra_time: 150ms
+  button_on_time: 500ms
+
+  button_brightness: "0.7"
+  button_color: "{0,0,100}"
+
+  nightlight: "on"
+  nightlight_brightness: "0.2"
+  nightlight_color: "{80,70,0}"
+
+  latitude: "50.123456°"
+  longitude: "5.654321°"
 
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
@@ -110,14 +120,15 @@ substitutions:
   pa_power_pin: GPIO26
 
   led_pin: GPIO13
+  status_led_pin: GPIO33
 
-  uart_tx_pin: GPIO09
-  uart_rx_pin: GPIO10
+  uart_tx_pin: GPIO19
+  uart_rx_pin: GPIO22
 
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
   audio_sdata_pin: GPIO15
-  
+
   touchpanel_power_pin: GPIO5
 ```
 
@@ -151,6 +162,30 @@ If set to false, only the touch event will be transmitted, but the relay will no
 Specifies whether relay 3 should be permanently linked to touchfield 3.  
 If set to true, the relay will be triggered every time touchfield 3 is pressed.  
 If set to false, only the touch event will be transmitted, but the relay will not be triggered.  
+  
+**button_brightness** _(Default: "0.7")_  
+Sets the brightness level for indicating a relay is turned on.  
+  
+**button_color** _(Default: "{0,0,100}")_  
+Sets the color to display under the button when a relay is turned on.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**nightlight** _(Default: "on")_  
+Specifies whether the nightlight should automatically turn on after sunset.  
+To enable automatic on/off functionality, you need to specify your location using latitude and longitude coordinates.  
+  
+**nightlight_brightness** _(Default: "0.2")_  
+Sets the brightness level for the nightlight.  
+  
+**nightlight_color** _(Default: "{80,70,0}")_  
+Sets the color in which the nightlight should glow.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**latitude** _(Default: "50.123456°")_  
+Sets the latitude of your location to determine sunrise and sunset times.  
+  
+**longitude** _(Default: "5.654321°")_  
+Sets the longitude of your location to determine sunrise and sunset times.  
   
 **relay_1_pin** _(Default: GPIO18)_  
 Set the GPIO pin for the first relay.  
@@ -278,13 +313,14 @@ You can use all components based on their ID.
 **Swipe left:** swipe_left  
 **Swipe right:** swipe_right  
 **Multi-touch:** multi_touch  
+**Long-touch:** long_press  
   
 ### Switches
 **Relay 1:** relay_1  
 **Relay 2:** relay_2  
 **Relay 3:** relay_3  
 **Vibration motor:** vibra  
-**Power amplifier:** pa_power  
+**Nightlight** nightlight_active  
   
 ### Touch Input
 **tx_ultimate_touch:** tx_touch  

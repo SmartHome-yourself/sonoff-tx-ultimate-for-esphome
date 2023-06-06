@@ -1,15 +1,25 @@
 substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
+  name: "sonoff-tx-ultimate"
+  friendly_name: "TX Ultimate"
 
   relay_count: "2"
-
-  vibra_time: 150ms
-  button_on_time: 200ms
 
   toggle_relay_1_on_touch: "true"
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
+
+  vibra_time: 150ms
+  button_on_time: 500ms
+
+  button_brightness: "0.7"
+  button_color: "{0,0,100}"
+
+  nightlight: "on"
+  nightlight_brightness: "0.2"
+  nightlight_color: "{80,70,0}"
+
+  latitude: "50.123456°"
+  longitude: "5.654321°"
 
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
@@ -20,6 +30,7 @@ substitutions:
   pa_power_pin: GPIO26
 
   led_pin: GPIO13
+  status_led_pin: GPIO33
 
   uart_tx_pin: GPIO19
   uart_rx_pin: GPIO22
@@ -27,8 +38,8 @@ substitutions:
   audio_lrclk_pin: GPIO4
   audio_bclk_pin: GPIO2
   audio_sdata_pin: GPIO15
-  
-  touchpanel_power_pin: GPIO5  
+
+  touchpanel_power_pin: GPIO5
 
 esphome:
   name: ${name}
@@ -58,6 +69,11 @@ esphome:
       - binary_sensor.template.publish:
           id: swipe_right
           state: OFF
+      - binary_sensor.template.publish:
+          id: long_press
+          state: OFF
+      - script.execute: refresh_led_default
+      - script.execute: refresh_nightlight
 
 esp32:
   board: esp32dev
@@ -98,6 +114,17 @@ external_components:
     components: [tx_ultimate_touch]
 
 
+
+globals:
+  - id: nightlight_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${nightlight_color}
+  - id: button_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${button_color}
+
 binary_sensor:
   - platform: template
     name: "Touchfield 1"
@@ -112,6 +139,7 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: touchfield_1
           state: OFF
+      - script.execute: refresh_led_default
 
   - platform: template
     name: "Touchfield 2"
@@ -126,6 +154,7 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: touchfield_2
           state: OFF
+      - script.execute: refresh_led_default
 
   - platform: template
     name: "Touchfield 3"
@@ -140,6 +169,7 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: touchfield_3
           state: OFF
+      - script.execute: refresh_led_default
 
   - platform: template
     name: "Swipe left"
@@ -149,7 +179,8 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: swipe_left
           state: OFF
-        
+      - script.execute: refresh_led_default
+
   - platform: template
     name: "Swipe_right"
     id: swipe_right
@@ -158,6 +189,7 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: swipe_right
           state: OFF
+      - script.execute: refresh_led_default
 
   - platform: template
     name: "Multi Touch"
@@ -167,7 +199,17 @@ binary_sensor:
       - binary_sensor.template.publish:
           id: multi_touch
           state: OFF
+      - script.execute: refresh_led_default
 
+  - platform: template
+    name: "Long Press"
+    id: long_press
+    on_press:
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: multi_touch
+          state: OFF
+      - script.execute: refresh_led_default
 
 switch:
   - platform: gpio
@@ -175,18 +217,36 @@ switch:
     name: "${friendly_name} L1"
     pin: ${relay_1_pin}
     restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
 
   - platform: gpio
     id: relay_2
     name: "${friendly_name} L2"
     pin: ${relay_2_pin}
     restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
 
   - platform: gpio
     id: relay_3
     name: "${friendly_name} L3"
     pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
 
   - platform: gpio
     id: vibra
@@ -201,6 +261,7 @@ switch:
     id: pa_power
     pin: ${pa_power_pin}
     name: "PA Power"
+    internal: true
     restore_mode: ALWAYS_ON
 
   - platform: gpio
@@ -211,6 +272,31 @@ switch:
     id: touch_power
     internal: true
     restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    name: "Nightlight"
+    id: nightlight
+    internal: true
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+
+  - platform: template
+    name: "Nightlight"
+    id: nightlight_active
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
 
 light:
   - platform: neopixelbus
@@ -224,12 +310,81 @@ light:
     effects:
       - addressable_rainbow:
           name: "Rainbow"
-          speed: 10
-          width: 20
+          speed: 30
+          width: 8
       - pulse:
           name: "Pulse"
           transition_length: 1.4s
           update_interval: 1s
+
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+
+  - platform: partition
+    name: "LEDs Button right"
+    id: leds_button_right
+    internal: true
+    segments:
+      - id: leds
+        from: 7
+        to: 7
+  - platform: partition
+    name: "LEDs Button middle"
+    id: leds_button_middle
+    internal: true
+    segments:
+      - id: leds
+        from: 9
+        to: 9
+  - platform: partition
+    name: "LEDs Button left"
+    id: leds_button_left
+    internal: true
+    segments:
+      - id: leds
+        from: 11
+        to: 11
+
+  - platform: partition
+    name: "LEDs Nightlight"
+    id: leds_nightlight
+    internal: true
+    segments:
+      - id: leds
+        from: 0
+        to: 6
+      - id: leds
+        from: 8
+        to: 8
+      - id: leds
+        from: 10
+        to: 10
+      - id: leds
+        from: 12
+        to: 19
+      - id: leds
+        from: 27
+        to: 27
+      - id: leds_top
+        from: 0
+        to: 6
+
+  - platform: partition
+    name: "LEDs Top"
+    id: leds_top
+    internal: true
+    segments:
+      - id: leds
+        from: 20
+        to: 26
+    effects:
+      - addressable_scan:
+          name: "Scan"
+      - addressable_rainbow:
+          name: "Rainbow"
+          speed: 10
+          width: 20
 
 media_player:
   - platform: i2s_audio
@@ -267,20 +422,11 @@ tx_ultimate_touch:
   uart: my_uart
 
   on_press:
-    - script.execute:
-        id: touch_led_marker
-        pos: !lambda "return touch.x;"
-        state: !lambda "return touch.state;"
-
+    - script.execute: led_on_touch
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "Touch Position: %d / State: %d", touch.x, touch.state);
 
   on_release:
-    - script.execute:
-        id: touch_led_marker
-        pos: !lambda "return touch.x;"
-        state: !lambda "return touch.state;"
-
     - script.execute:
         id: handle_release
         pos: !lambda "return touch.x;"
@@ -291,10 +437,7 @@ tx_ultimate_touch:
         ESP_LOGD("tx_ultimate_touch.on_release", "Release Position: %d / State: %d", touch.x, touch.state);
 
   on_swipe_left:
-    - script.execute:
-        id: touch_led_marker
-        pos: !lambda "return touch.x;"
-        state: !lambda "return touch.state;"
+    - script.execute: led_on_swipe_left
 
     - switch.turn_on: vibra
 
@@ -306,10 +449,7 @@ tx_ultimate_touch:
         ESP_LOGD("tx_ultimate_touch.on_swipe_left", "Swipe Left Position: %d / State: %d", touch.x, touch.state);
 
   on_swipe_right:
-    - script.execute:
-        id: touch_led_marker
-        pos: !lambda "return touch.x;"
-        state: !lambda "return touch.state;"
+    - script.execute: led_on_swipe_right
 
     - switch.turn_on: vibra
 
@@ -321,10 +461,7 @@ tx_ultimate_touch:
         ESP_LOGD("tx_ultimate_touch.on_swipe_right", "Swipe Right Position: %d / State: %d", touch.x, touch.state);
 
   on_full_touch_release:
-    - script.execute:
-        id: touch_led_marker
-        pos: !lambda "return touch.x;"
-        state: !lambda "return touch.state;"
+    - script.execute: led_on_full_touch
 
     - switch.turn_on: vibra
 
@@ -336,17 +473,238 @@ tx_ultimate_touch:
         ESP_LOGD("tx_ultimate_touch.on_full_touch_release", "Full Touch Release Position: %d / State: %d", touch.x, touch.state);
 
   on_long_touch_release:
-    - script.execute:
-        id: touch_led_marker
-        pos: !lambda "return touch.x;"
-        state: !lambda "return touch.state;"
+    - script.execute: led_on_long_touch
 
     - switch.turn_on: vibra
+
+    - binary_sensor.template.publish:
+        id: long_press
+        state: ON
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_long_touch_release", "Long Touch Release Position: %d / State: %d", touch.x, touch.state);
 
+time:
+  - platform: homeassistant
+  - platform: sntp
+    on_time:
+      # Every 5 minutes
+      - seconds: 0
+        minutes: /5
+        then:
+          - script.execute: refresh_nightlight
+
+sun:
+  latitude: ${latitude}
+  longitude: ${longitude}
+
+
 script:
+  - id: refresh_nightlight
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return "${nightlight}" == "on";'
+          then:
+            - if:
+                condition:
+                  - sun.is_below_horizon:
+                then:
+                  - switch.turn_on:
+                      id: nightlight
+                else:
+                  - switch.turn_off:
+                      id: nightlight
+
+  - id: refresh_led_default
+    mode: restart
+    then:
+      - light.turn_off: leds_top
+
+      - if:
+          condition:
+            lambda: "return (${relay_count}>1 && id(relay_1).state) ;"
+          then:
+            - script.execute: led_on_button_left
+          else:
+            - script.execute: led_off_button_left
+
+      - if:
+          condition:
+            lambda: "return (${relay_count}==3 && id(relay_2).state) || (${relay_count}==1 && id(relay_1).state);"
+          then:
+            - script.execute: led_on_button_middle
+          else:
+            - script.execute: led_off_button_middle
+
+      - if:
+          condition:
+            lambda: "return (${relay_count}==2 && id(relay_2).state) || (${relay_count}==3 && id(relay_3).state);"
+          then:
+            - script.execute: led_on_button_right
+          else:
+            - script.execute: led_off_button_right
+
+      - if:
+          condition:
+            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+          then:
+            - script.execute: led_on_nightlight
+          else:
+            - light.turn_off: leds_nightlight
+
+  - id: led_on_button_left
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_button_left
+          brightness: ${button_brightness}
+          red: !lambda "return id(button_color)[0]/100.0;"
+          green: !lambda "return id(button_color)[1]/100.0;"
+          blue:  !lambda "return id(button_color)[2]/100.0;"
+
+  - id: led_on_button_middle
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_button_middle
+          brightness: ${button_brightness}
+          red: !lambda "return id(button_color)[0]/100.0;"
+          green: !lambda "return id(button_color)[1]/100.0;"
+          blue:  !lambda "return id(button_color)[2]/100.0;"
+
+  - id: led_on_button_right
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_button_right
+          brightness: ${button_brightness}
+          red: !lambda "return id(button_color)[0]/100.0;"
+          green: !lambda "return id(button_color)[1]/100.0;"
+          blue:  !lambda "return id(button_color)[2]/100.0;"
+
+
+  - id: led_off_button_left
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+          then:
+            - light.turn_on:
+                id: leds_button_left
+                brightness: ${nightlight_brightness}
+                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                green: !lambda "return id(nightlight_color)[1]/100.0;"
+                blue:  !lambda "return id(nightlight_color)[2]/100.0;"
+          else:
+            - light.turn_off:
+                id: leds_button_left
+
+  - id: led_off_button_middle
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+          then:
+            - light.turn_on:
+                id: leds_button_middle
+                brightness: ${nightlight_brightness}
+                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                green: !lambda "return id(nightlight_color)[1]/100.0;"
+                blue:  !lambda "return id(nightlight_color)[2]/100.0;"
+          else:
+            - light.turn_off:
+                id: leds_button_left
+
+
+  - id: led_off_button_right
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+          then:
+            - light.turn_on:
+                id: leds_button_right
+                brightness: ${nightlight_brightness}
+                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                green: !lambda "return id(nightlight_color)[1]/100.0;"
+                blue:  !lambda "return id(nightlight_color)[2]/100.0;"
+          else:
+            - light.turn_off:
+                id: leds_button_left
+
+
+  - id: led_on_nightlight
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_nightlight
+          brightness: ${nightlight_brightness}
+          red: !lambda "return id(nightlight_color)[0]/100.0;"
+          green: !lambda "return id(nightlight_color)[1]/100.0;"
+          blue:  !lambda "return id(nightlight_color)[2]/100.0;"
+
+  - id: led_on_release
+    mode: restart
+    then:
+      - light.turn_off:
+          id: leds_top
+
+  - id: led_on_touch
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_top
+          brightness: 1
+          red: 0
+          green: 0
+          blue: 1
+          effect: Scan
+      - delay: 6s
+      - script.execute: refresh_led_default
+
+  - id: led_on_swipe_left
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_top
+          brightness: .2
+          red: 0
+          green: 1
+          blue: 0
+
+  - id: led_on_swipe_right
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_top
+          brightness: .2
+          red: 1
+          green: 0
+          blue: 0
+
+  - id: led_on_full_touch
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_top
+          brightness: .5
+          effect: "Rainbow"
+
+  - id: led_on_long_touch
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_nightlight
+          brightness: .2
+          red: .8
+          green: .7
+          blue: 0
+
   - id: handle_release
     mode: restart
     parameters:
@@ -427,7 +785,7 @@ script:
                       red: 1
                       green: 0
                       blue: 0
-                  - delay: 1s
+                  - delay: 6s
                   - light.turn_off: leds
 
                 else:
