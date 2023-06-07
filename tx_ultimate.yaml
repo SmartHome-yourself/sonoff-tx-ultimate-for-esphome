@@ -1,5 +1,5 @@
 substitutions:
-  name: "sonoff-tx-ultimate"
+  name: "shys-tx-ultimate"
   friendly_name: "TX Ultimate"
 
   relay_count: "2"
@@ -21,6 +21,26 @@ substitutions:
   latitude: "50.123456°"
   longitude: "5.654321°"
 
+  touch_brightness: "1"
+  touch_color: "{0,100,100}"
+  touch_effect: "Scan"
+
+  long_press_brightness: "1"
+  long_press_color: "{100,0,0}"
+  long_press_effect: ""
+
+  multi_touch_brightness: "1"
+  multi_touch_color: "{0,0,0}"
+  multi_touch_effect: "Rainbow"
+
+  swipe_left_brightness: "1"
+  swipe_left_color: "{0,100,0}"
+  swipe_left_effect: ""
+
+  swipe_right_brightness: "1"
+  swipe_right_color: "{100,0,70}"
+  swipe_right_effect: ""
+
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
   relay_3_pin: GPIO27
@@ -40,6 +60,7 @@ substitutions:
   audio_sdata_pin: GPIO15
 
   touchpanel_power_pin: GPIO5
+
 
 esphome:
   name: ${name}
@@ -126,6 +147,28 @@ globals:
     type: int [3]
     restore_value: no
     initial_value: ${button_color}
+  - id: long_press_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${long_press_color}
+  - id: multi_touch_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${multi_touch_color}
+  - id: swipe_left_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${swipe_left_color}
+  - id: swipe_right_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${swipe_right_color}
+  - id: touch_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${touch_color}    
+
+
 
 binary_sensor:
   - platform: template
@@ -209,7 +252,7 @@ binary_sensor:
     on_press:
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
-          id: multi_touch
+          id: long_press
           state: OFF
       - script.execute: refresh_led_default
 
@@ -299,6 +342,9 @@ switch:
     on_turn_off:
       then:
         - script.execute: refresh_led_default
+
+  - platform: restart
+    name: "${friendly_name} Restart"
 
 light:
   - platform: neopixelbus
@@ -661,11 +707,11 @@ script:
     then:
       - light.turn_on:
           id: leds_top
-          brightness: 1
-          red: 0
-          green: 0
-          blue: 1
-          effect: Scan
+          brightness: ${touch_brightness}
+          red: !lambda "return id(touch_color)[0]/100.0;"
+          green: !lambda "return id(touch_color)[1]/100.0;"
+          blue:  !lambda "return id(touch_color)[2]/100.0;"
+          effect: ${touch_effect}
       - delay: 6s
       - script.execute: refresh_led_default
 
@@ -674,38 +720,46 @@ script:
     then:
       - light.turn_on:
           id: leds_top
-          brightness: .2
-          red: 0
-          green: 1
-          blue: 0
+          brightness: ${swipe_left_brightness}
+          red: !lambda "return id(swipe_left_color)[0]/100.0;"
+          green: !lambda "return id(swipe_left_color)[1]/100.0;"
+          blue:  !lambda "return id(swipe_left_color)[2]/100.0;"
+          effect: ${swipe_left_effect}
 
   - id: led_on_swipe_right
     mode: restart
     then:
       - light.turn_on:
           id: leds_top
-          brightness: .2
-          red: 1
-          green: 0
-          blue: 0
+          brightness: ${swipe_right_brightness}
+          red: !lambda "return id(swipe_right_color)[0]/100.0;"
+          green: !lambda "return id(swipe_right_color)[1]/100.0;"
+          blue:  !lambda "return id(swipe_right_color)[2]/100.0;"
+          effect: ${swipe_right_effect}
 
   - id: led_on_full_touch
     mode: restart
     then:
       - light.turn_on:
           id: leds_top
-          brightness: .5
-          effect: "Rainbow"
+          brightness: ${multi_touch_brightness}
+          red: !lambda "return id(multi_touch_color)[0]/100.0;"
+          green: !lambda "return id(multi_touch_color)[1]/100.0;"
+          blue:  !lambda "return id(multi_touch_color)[2]/100.0;"
+          effect: ${multi_touch_effect}
+
 
   - id: led_on_long_touch
     mode: restart
     then:
       - light.turn_on:
-          id: leds_nightlight
-          brightness: .2
-          red: .8
-          green: .7
-          blue: 0
+          id: leds_top
+          brightness: ${long_press_brightness}
+          red: !lambda "return id(long_press_color)[0]/100.0;"
+          green: !lambda "return id(long_press_color)[1]/100.0;"
+          blue:  !lambda "return id(long_press_color)[2]/100.0;"
+          effect: ${long_press_effect}
+
 
   - id: handle_release
     mode: restart

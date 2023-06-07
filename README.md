@@ -90,7 +90,7 @@ The pins are already specified by the hardware and therefore do not actually hav
 
 ```
 substitutions:
-  name: "sonoff-tx-ultimate"
+  name: "shys-tx-ultimate"
   friendly_name: "TX Ultimate"
 
   relay_count: "2"
@@ -112,6 +112,26 @@ substitutions:
   latitude: "50.123456°"
   longitude: "5.654321°"
 
+  touch_brightness: "1"
+  touch_color: "{0,100,100}"
+  touch_effect: "Scan"
+
+  long_press_brightness: "1"
+  long_press_color: "{100,0,0}"
+  long_press_effect: ""
+
+  multi_touch_brightness: "1"
+  multi_touch_color: "{0,0,0}"
+  multi_touch_effect: "Rainbow"
+
+  swipe_left_brightness: "1"
+  swipe_left_color: "{0,100,0}"
+  swipe_left_effect: ""
+
+  swipe_right_brightness: "1"
+  swipe_right_color: "{100,0,70}"
+  swipe_right_effect: ""
+
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
   relay_3_pin: GPIO27
@@ -131,6 +151,7 @@ substitutions:
   audio_sdata_pin: GPIO15
 
   touchpanel_power_pin: GPIO5
+
 ```
 
 **name** _(Default: sonoff-tx-ultimate)_   
@@ -187,6 +208,71 @@ Sets the latitude of your location to determine sunrise and sunset times.
   
 **longitude** _(Default: "5.654321°")_  
 Sets the longitude of your location to determine sunrise and sunset times.  
+  
+**touch_brightness** _(Default: "1")_  
+Sets the brightness level for the LEDs used in touch visualization. (Valid values: 0.0 - 1.0)  
+  
+**touch_color** _(Default: "{0,100,100}")_  
+Sets the color for the LEDs used in touch visualization.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**touch_effect** _(Default: "Scan")_  
+Sets the effect for the LEDs used in touch visualization.  
+Possible effects:  
+- Rainbow  
+- Scan  
+  
+**long_press_brightness** _(Default: "1")_  
+Sets the brightness level for the LEDs used in long-press visualization. (Valid values: 0.0 - 1.0)  
+  
+**long_press_color** _(Default: "{100,0,0}")_  
+Sets the color for the LEDs used in long-press visualization.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**long_press_effect** _(Default: "")_  
+Sets the effect for the LEDs used in long-press visualization.  
+Possible effects:  
+- Rainbow  
+- Scan  
+  
+**multi_touch_brightness** _(Default: "1")_  
+Sets the brightness level for the LEDs used in multi-touch visualization. (Valid values: 0.0 - 1.0)  
+  
+**multi_touch_color** _(Default: "{0,0,0}")_  
+Sets the color for the LEDs used in multi-touch visualization.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**multi_touch_effect** _(Default: "Rainbow")_  
+Sets the effect for the LEDs used in multi-touch visualization.  
+Possible effects:  
+- Rainbow  
+- Scan  
+  
+**swipe_left_brightness** _(Default: "1")_ (Valid values: 0.0 - 1.0)  
+Sets the brightness level for the LEDs used in left swipe visualization. (Valid values: 0.0 - 1.0)  
+  
+**swipe_left_color** _(Default: "{0,100,0}")_  
+Sets the color for the LEDs used in left swipe visualization.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**swipe_left_effect** _(Default: "")_  
+Sets the effect for the LEDs used in left swipe visualization.  
+Possible effects:  
+- Rainbow  
+- Scan  
+  
+**swipe_right_brightness** _(Default: "1")_ (Valid values: 0.0 - 1.0)  
+Sets the brightness level for the LEDs used in right swipe visualization. (Valid values: 0.0 - 1.0)  
+  
+**swipe_right_color** _(Default: "{100,0,70}")_  
+Sets the color for the LEDs used in right swipe visualization.  
+The color is specified as an RGB value using an array of 3 integers from 0-100.  
+  
+**swipe_right_effect** _(Default: "")_  
+Sets the effect for the LEDs used in right swipe visualization.  
+Possible effects:  
+- Rainbow  
+- Scan  
   
 **relay_1_pin** _(Default: GPIO18)_  
 Set the GPIO pin for the first relay.  

@@ -89,7 +89,7 @@ Die Pins sind bereits in der Hardware angegeben und müssen daher nicht geänder
 
 ```
 substitutions:
-  name: "sonoff-tx-ultimate"
+  name: "shys-tx-ultimate"
   friendly_name: "TX Ultimate"
 
   relay_count: "2"
@@ -111,6 +111,26 @@ substitutions:
   latitude: "50.123456°"
   longitude: "5.654321°"
 
+  touch_brightness: "1"
+  touch_color: "{0,100,100}"
+  touch_effect: "Scan"
+
+  long_press_brightness: "1"
+  long_press_color: "{100,0,0}"
+  long_press_effect: ""
+
+  multi_touch_brightness: "1"
+  multi_touch_color: "{0,0,0}"
+  multi_touch_effect: "Rainbow"
+
+  swipe_left_brightness: "1"
+  swipe_left_color: "{0,100,0}"
+  swipe_left_effect: ""
+
+  swipe_right_brightness: "1"
+  swipe_right_color: "{100,0,70}"
+  swipe_right_effect: ""
+
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
   relay_3_pin: GPIO27
@@ -130,6 +150,7 @@ substitutions:
   audio_sdata_pin: GPIO15
 
   touchpanel_power_pin: GPIO5
+
 ```
 
 **name** _(Standard: sonoff-tx-ultimate)_   
@@ -164,7 +185,7 @@ Bei true wird das Relais bei jedem Druck auf Touchfeld 3 geschaltet.
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
   
 **button_brightness** _(Standard: "0.7")_  
-Legt die Helligkeit fest, mit der angezeigt wird, dass ein Relais eingeschaltet ist.  
+Legt die Helligkeit fest, mit der angezeigt wird, dass ein Relais eingeschaltet ist. (Gültige Werte: 0.0 - 1.0)  
   
 **button_color** _(Standard: "{0,0,100}")_  
 Legt die Farbe fest, in der unter der Schaltfläche angezeigt werden soll, dass das Relais eingeschaltet ist.  
@@ -175,7 +196,7 @@ Gibt an, ob das Nachtlicht nach Sonnenuntergang automatisch eingeschaltet werden
 Damit die automatische an/abschaltung funktioniert, muss der eigene Standort über Längen- und Breitengrad mit latitude und longitude angegeben werden!
   
 **nightlight_brightness** _(Standard: "0.2")_  
-Legt die Helligkeit fest, mit der das Nachtlicht leuchten soll.  
+Legt die Helligkeit fest, mit der das Nachtlicht leuchten soll. (Gültige Werte: 0.0 - 1.0)  
   
 **nightlight_color** _(Standard: "{80,70,0}")_  
 Legt die Farbe fest, in der das Nachtlicht leuchten soll.  
@@ -186,6 +207,71 @@ Legt den Breitengrad des eigenen Standorts fest, um Sonnenauf- und untergang zu 
 
 **longitude** _(Standard: "5.654321°")_  
 Legt den Längengrad des eigenen Standorts fest, um Sonnenauf- und untergang zu ermitteln  
+  
+**touch_brightness**  _(Standard: "1")_  
+Legt die Helligkeit der LEDs für die Touch Visualisierung fest. (Gültige Werte 0.0 - 1.0)  
+  
+**touch_color**  _(Standard: "{0,100,100}")_  
+Legt die Farbe der LEDs für die Touch Visualisierung fest.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**touch_effect**  _(Standard: "Scan")_  
+Legt den Effekt der LEDs für die Touch Visualisierung fest.  
+Mögliche Effekte:  
+- Rainbow  
+- Scan  
+  
+**long_press_brightness**  _(Standard: "1")_  
+Legt die Helligkeit der LEDs für die Long-Press Visualisierung fest. (Gültige Werte 0.0 - 1.0)  
+  
+**long_press_color**  _(Standard: "{100,0,0}")_  
+Legt die Farbe der LEDs für die Long-Press Visualisierung fest.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**long_press_effect**  _(Standard: "")_  
+Legt den Effekt der LEDs für die Long-Press Visualisierung fest.  
+Mögliche Effekte:  
+- Rainbow  
+- Scan  
+  
+**multi_touch_brightness**  _(Standard: "1")_  
+Legt die Helligkeit der LEDs für die Multi-Touch Visualisierung fest. (Gültige Werte 0.0 - 1.0)  
+  
+**multi_touch_color**  _(Standard: "{0,0,0}")_  
+Legt die Farbe der LEDs für die Multi-Touch Visualisierung fest.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**multi_touch_effect**  _(Standard: "Rainbow")_  
+Legt den Effekt der LEDs für die Multi-Touch Visualisierung fest.  
+Mögliche Effekte:  
+- Rainbow  
+- Scan  
+  
+**swipe_left_brightness**  _(Standard: "1")_ (Gültige Werte: 0.0 - 1.0)  
+Legt die Helligkeit der LEDs für die Visualisierung des wischen nach links fest. (Gültige Werte 0.0 - 1.0)  
+  
+**swipe_left_color**  _(Standard: "{0,100,0}")_  
+Legt die Farbe der LEDs für die Visualisierung des wischen nach links fest.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**swipe_left_effect**  _(Standard: "")_  
+Legt den Effekt der LEDs für die Visualisierung des wischen nach links fest.  
+Mögliche Effekte:  
+- Rainbow  
+- Scan  
+  
+**swipe_right_brightness**  _(Standard: "1")_ (Gültige Werte: 0.0 - 1.0)  
+Legt die Helligkeit der LEDs für die Visualisierung des wischen nach rechts fest. (Gültige Werte 0.0 - 1.0)  
+  
+**swipe_right_color**  _(Standard: "{100,0,70}")_  
+Legt die Farbe der LEDs für die Visualisierung des wischen nach rechts fest.  
+Die Farbe wird als RGB-Wert durch ein Array von 3 Ganzzahlen von 0-100 angegeben.  
+  
+**swipe_right_effect**  _(Standard: "")_  
+Legt den Effekt der LEDs für die Visualisierung des wischen nach rechts fest.  
+Mögliche Effekte:  
+- Rainbow  
+- Scan  
   
 **relay_1_pin** _(Standard: GPIO18)_  
 Legen Sie den GPIO-Pin für das erste Relais fest.  
