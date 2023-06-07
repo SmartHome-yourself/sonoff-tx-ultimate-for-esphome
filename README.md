@@ -31,7 +31,8 @@ Use the code **DANIELSCHSONOFF** to get an additional 10% off your order.
   
 ## Home Assistant device
 The screenshot shows an example of the device in Home Assistant after integration.  
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)  
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/86a6f88e-b453-492e-b9cf-ab50b69ad2e9)
+  
   
 &nbsp;    
   

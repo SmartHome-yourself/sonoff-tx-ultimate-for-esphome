@@ -31,7 +31,7 @@ Mit dem Code **DANIELSCHSONOFF** erhaltet Ihr sogar noch einmal 10% auf eure Bes
   
 ## Home Assistant-Gerät
 Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Integration.  
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/8a4d817c-1850-43bd-be6a-648699c38a05)  
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/86a6f88e-b453-492e-b9cf-ab50b69ad2e9)
   
 &nbsp;  
     
