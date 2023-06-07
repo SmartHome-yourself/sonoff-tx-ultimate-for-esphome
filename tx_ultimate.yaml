@@ -619,7 +619,7 @@ script:
                 blue:  !lambda "return id(nightlight_color)[2]/100.0;"
           else:
             - light.turn_off:
-                id: leds_button_left
+                id: leds_button_middle
 
 
   - id: led_off_button_right
@@ -637,7 +637,7 @@ script:
                 blue:  !lambda "return id(nightlight_color)[2]/100.0;"
           else:
             - light.turn_off:
-                id: leds_button_left
+                id: leds_button_right
 
 
   - id: led_on_nightlight
