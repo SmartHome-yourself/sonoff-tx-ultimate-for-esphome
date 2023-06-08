@@ -471,6 +471,21 @@ tx_ultimate_touch:
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_press", "Touch Position: %d / State: %d", touch.x, touch.state);
 
+    # Fallback if Home Assistant and/or Wifi are down, toggle relay instead of using Home Assistant for toggling lights
+    # For this to work blubs need to turn on on powered up
+    - if:
+      condition:
+        and:
+          - wifi.connected:
+          - api.connected:
+      # toggle smart light if wifi and api are connected and relay is on,
+      # used when Home Assistant and/or Wifi are back online 
+      then:
+        - switch.turn_on: relay_1
+      # else, toggle relay
+      else:
+        - switch.toggle: relay_1
+
   on_release:
     - script.execute:
         id: handle_release
