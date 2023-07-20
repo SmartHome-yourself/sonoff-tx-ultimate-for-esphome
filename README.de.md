@@ -83,10 +83,52 @@ external_components:
   
 &nbsp;  
   
+## Alternative Jalousie-Steuerung
+Wer den Schalter zum steuern von Jalousien einsetzen möchte, benötigt eine etwas abweichende Konfiguration.  
+Vor allem müssen die zwei Relais für den Motor gegeneinander gesperrt werden (interlock).   
+Natürlich funktioniert das nur mit der 2- und 3-Relais-Variante. In beiden Fällen wird für die Motorsteuerung Relais 1 und 2 verwendet, da ich das interlock nicht dynamisch konfigurieren konnte.  
+Bei Schaltern mit 3 Relais ist bei der Cover-Konfiguration daher der mittlere Taster mit dem dritten Relais belegt. Öffnen und schließen steuert man also immer mit den Tasten links und rechts.  
+  
+### Minimal Konfiguration für Jalousie-Steuerung
+Grundsätzlich unterscheidet sich die mindestens notwendige Konfiguration für Jalousien nur in der Package-URL.
+Die Zeitangaben für cover_open_duration und cover_close_duration sollten so genau wie möglich angegeben werden. Lieber aber eine Sekunde zu viel, als zu wenig.
+
+```
+substitutions:
+  name: "shys-tx-ultimate"
+  friendly_name: "SHYS TX Ultimate"
+  relay_count: "2"
+  
+  cover_open_duration: 25s
+  cover_close_duration: 25s
+  
+packages:
+  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
+api:
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  
+  ap:
+    ssid: ${friendly_name} AP
+    password: "top_secret"
+```
+  
+  
+&nbsp;  
+    
 # Konfiguration
 Alle Ersetzungen sind optional, aber ich empfehle, mindestens `name`, `friendly_name` und `relay_count` anzugeben.  
 Die Pins sind bereits in der Hardware angegeben und müssen daher nicht geändert werden.  
 
+## Standard-Konfiguration (tx_ultimate.yaml / tx_ultimate_local.yaml)
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -152,7 +194,90 @@ substitutions:
   touchpanel_power_pin: GPIO5
 
 ```
+  
+  
+## Cover-Konfiguration (tx_ultimate_cover.yaml)
+Bei der Jalousie weichen die Parameter etwas ab.
 
+```
+substitutions:
+  name: "shys-tx-ultimate-cover"
+  friendly_name: "TX Ultimate Cover"
+
+  relay_count: "3"
+
+  # only used on 3-way switch (relay_count = 3)
+  toggle_relay_3_on_touch: "true"
+
+  cover_name: "My Cover"
+  cover_open_duration: 25s
+  cover_close_duration: 25s
+
+  vibra_time: 150ms
+  button_on_time: 500ms
+
+  button_brightness: "0.7"
+  button_color: "{0,0,100}"
+
+  nightlight: "on"
+  nightlight_brightness: "0.2"
+  nightlight_color: "{80,70,0}"
+
+  cover_brightness: "0.7"
+  cover_color1: "{255,0,0}"
+  cover_color2: "{0,255,0}"
+
+  latitude: "51.132241°"
+  longitude: "7.178795°"
+
+  touch_brightness: "1"
+  touch_color: "{0,100,100}"
+  touch_effect: "Scan"
+
+  boot_brightness: "0.7"
+  boot_color1: "{100,0,0}"
+  boot_color2: "{100,100,0}"
+  boot_effect: "Scan"
+
+  long_press_brightness: "1"
+  long_press_color: "{100,0,0}"
+  long_press_effect: ""
+
+  multi_touch_brightness: "1"
+  multi_touch_color: "{0,0,0}"
+  multi_touch_effect: "Rainbow"
+
+  swipe_left_brightness: "1"
+  swipe_left_color: "{0,100,0}"
+  swipe_left_effect: "Pulse"
+
+  swipe_right_brightness: "1"
+  swipe_right_color: "{100,0,70}"
+  swipe_right_effect: "Pulse"
+
+  relay_1_pin: GPIO18
+  relay_2_pin: GPIO17
+  relay_3_pin: GPIO27
+  relay_4_pin: GPIO23
+
+  vibra_motor_pin: GPIO21
+  pa_power_pin: GPIO26
+
+  led_pin: GPIO13
+  status_led_pin: GPIO33
+
+  uart_tx_pin: GPIO19
+  uart_rx_pin: GPIO22
+
+  audio_lrclk_pin: GPIO4
+  audio_bclk_pin: GPIO2
+  audio_sdata_pin: GPIO15
+
+  touchpanel_power_pin: GPIO5
+```
+  
+&nbsp;  
+  
 **name** _(Standard: sonoff-tx-ultimate)_   
 Der Hostname des Geräts.  
   
@@ -161,6 +286,7 @@ Der Name, der im Frontend angezeigt wird.
   
 **relay_count** _(Standard: 2)_   
 Gibt an, ob es sich um die 1-, 2- oder 3-Relais-Variante handelt.  
+Die Jalousie-Konfiguration unterstützt nur die Varianten mit 2 oder 3 Relais.
 _Mögliche Werte (ganze Zahl von 1 bis 3)_  
   
 **vibra_time** _(Standard: 100ms)_  
@@ -173,12 +299,14 @@ Gibt an, wie lange die binären Sensoren als Signal für eine Berührung aktiv b
 Legt fest, ob das Relais 1 fest an das Touchfeld 1 gekoppelt sein soll.  
 Bei true wird das Relais bei jedem Druck auf Touchfeld 1 geschaltet.  
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
+Existiert in der Jalousie-Variante nicht, da Relais 1 und 2 zwingend für den Motor benötigt werden.  
   
 **toggle_relay_2_on_touch** _(Standard: "true")_  
 Legt fest, ob das Relais 2 fest an das Touchfeld 2 gekoppelt sein soll.  
 Bei true wird das Relais bei jedem Druck auf Touchfeld 2 geschaltet.  
 Bei false wird nur das Touch-Event übermittelt aber das Relais nicht geschaltet.  
-  
+Existiert in der Jalousie-Variante nicht, da Relais 1 und 2 zwingend für den Motor benötigt werden.  
+
 **toggle_relay_3_on_touch** _(Standard: "true")_  
 Legt fest, ob das Relais 3 fest an das Touchfeld 3 gekoppelt sein soll.  
 Bei true wird das Relais bei jedem Druck auf Touchfeld 3 geschaltet.  
@@ -309,6 +437,26 @@ Legen Sie den GPIO-Pin für die I2S-Audio-Bus-Taktleitung fest.
   
 **audio_sdata_pin** _(Standard: GPIO15)_  
 Legen Sie den GPIO-Pin für die I2S-Datenleitung fest.  
+  
+**cover_name** _(Standard: GPIO15)_  
+Name der Cover-Komponente  
+  
+**cover_open_duration** _(Standard: 25s)_  
+Die Zeit, die die Jalousie zum öffnen benötigt.  
+  
+**cover_close_duration** _(Standard: 25s)_  
+Die Zeit, die die Jalousie zum schließen benötigt.  
+  
+**cover_brightness** _(Standard: 0.7)_  
+Helligkeit der Positionsanzeige fürs Cover (Rechte Seite)  
+Dimmt automatisch auf "nightlight_brightness", wenn der Nachtlicht-Modus aktiv wird.  
+  
+**cover_color1** _(Standard: {255,0,0})_  
+Farbe 1 für die Positionsanzeige der Cover-Komponente.  
+  
+**cover_color2** _(Standard: {0,255,0})_  
+Farbe 2 für die Positionsanzeige der Cover-Komponente.  
+  
   
 &nbsp;  
   

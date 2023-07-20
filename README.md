@@ -84,10 +84,51 @@ external_components:
   
 &nbsp;  
   
+## Alternative Blind Control
+If you want to use the switch for blind control, you need a slightly different configuration.  
+Especially, the two relays for the motor must be interlocked.  
+This setup works only with the 2- and 3-relay version. In both cases, Relays 1 and 2 are used for motor control, as I couldn't configure interlock dynamically.  
+For switches with 3 relays, the middle button is assigned to the third relay in the cover configuration. So, you control opening and closing using the left and right buttons.
+
+### Minimal Configuration for Blind Control
+The minimal necessary configuration for blinds differs only in the package URL.  
+The timings for `cover_open_duration` and `cover_close_duration` should be as accurate as possible. It's better to have a second too much than too little.
+
+```
+substitutions:
+  name: "shys-tx-ultimate"
+  friendly_name: "SHYS TX Ultimate"
+  relay_count: "2"
+  
+  cover_open_duration: 25s
+  cover_close_duration: 25s
+  
+packages:
+  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
+api:
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  
+  ap:
+    ssid: ${friendly_name} AP
+    password: "top_secret"
+```
+  
+&nbsp;  
+  
 # Configuration
 All substitutions are optional, but I recommend specifying at least name, friendly_name, and relay_count.  
 The pins are already specified by the hardware and therefore do not actually have to be changed.  
-
+  
+## Standard Configuration (tx_ultimate.yaml / tx_ultimate_local.yaml)
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -153,7 +194,90 @@ substitutions:
   touchpanel_power_pin: GPIO5
 
 ```
+  
+  
+## Cover Configuration (tx_ultimate_cover.yaml)
+Parameters differ slightly for blinds.
 
+```
+substitutions:
+  name: "shys-tx-ultimate-cover"
+  friendly_name: "TX Ultimate Cover"
+
+  relay_count: "3"
+
+  # only used on 3-way switch (relay_count = 3)
+  toggle_relay_3_on_touch: "true"
+
+  cover_name: "My Cover"
+  cover_open_duration: 25s
+  cover_close_duration: 25s
+
+  vibra_time: 150ms
+  button_on_time: 500ms
+
+  button_brightness: "0.7"
+  button_color: "{0,0,100}"
+
+  nightlight: "on"
+  nightlight_brightness: "0.2"
+  nightlight_color: "{80,70,0}"
+
+  cover_brightness: "0.7"
+  cover_color1: "{255,0,0}"
+  cover_color2: "{0,255,0}"
+
+  latitude: "51.132241°"
+  longitude: "7.178795°"
+
+  touch_brightness: "1"
+  touch_color: "{0,100,100}"
+  touch_effect: "Scan"
+
+  boot_brightness: "0.7"
+  boot_color1: "{100,0,0}"
+  boot_color2: "{100,100,0}"
+  boot_effect: "Scan"
+
+  long_press_brightness: "1"
+  long_press_color: "{100,0,0}"
+  long_press_effect: ""
+
+  multi_touch_brightness: "1"
+  multi_touch_color: "{0,0,0}"
+  multi_touch_effect: "Rainbow"
+
+  swipe_left_brightness: "1"
+  swipe_left_color: "{0,100,0}"
+  swipe_left_effect: "Pulse"
+
+  swipe_right_brightness: "1"
+  swipe_right_color: "{100,0,70}"
+  swipe_right_effect: "Pulse"
+
+  relay_1_pin: GPIO18
+  relay_2_pin: GPIO17
+  relay_3_pin: GPIO27
+  relay_4_pin: GPIO23
+
+  vibra_motor_pin: GPIO21
+  pa_power_pin: GPIO26
+
+  led_pin: GPIO13
+  status_led_pin: GPIO33
+
+  uart_tx_pin: GPIO19
+  uart_rx_pin: GPIO22
+
+  audio_lrclk_pin: GPIO4
+  audio_bclk_pin: GPIO2
+  audio_sdata_pin: GPIO15
+
+  touchpanel_power_pin: GPIO5
+```
+  
+&nbsp;  
+  
 **name** _(Default: sonoff-tx-ultimate)_   
 The hostname of the device.  
   
@@ -162,6 +286,7 @@ The name that is displayed in the Frontend.
   
 **relay_count** _(Default: 2)_   
 Indicates whether it is the 1, 2 or 3 relay variant.  
+The blind configuration only supports the variants with 2 or 3 relays.  
 _Possible Values (Integer 1-3)_  
   
 **vibra_time** _(Default: 100ms)_  
@@ -174,11 +299,13 @@ Specifies how long the binary sensors should remain active as a signal for a tou
 Specifies whether relay 1 should be permanently linked to touchfield 1.  
 If set to true, the relay will be triggered every time touchfield 1 is pressed.  
 If set to false, only the touch event will be transmitted, but the relay will not be triggered.  
+Not available in the blind variant, as relays 1 and 2 are required for motor control.  
   
 **toggle_relay_2_on_touch** _(Default: "true")_  
 Specifies whether relay 2 should be permanently linked to touchfield 2.  
 If set to true, the relay will be triggered every time touchfield 2 is pressed.  
 If set to false, only the touch event will be transmitted, but the relay will not be triggered.  
+Not available in the blind variant, as relays 1 and 2 are required for motor control.  
   
 **toggle_relay_3_on_touch** _(Default: "true")_  
 Specifies whether relay 3 should be permanently linked to touchfield 3.  
@@ -310,6 +437,25 @@ Set the GPIO pin for the I2S audio bus clock.
   
 **audio_sdata_pin** _(Default: GPIO15)_  
 Set the GPIO pin for the I2S data.  
+  
+**cover_name** _(Default: GPIO15)_  
+Name of the cover component.  
+  
+**cover_open_duration** _(Default: 25s)_  
+The time it takes for the blind to open.  
+  
+**cover_close_duration** _(Default: 25s)_  
+The time it takes for the blind to close.
+  
+**cover_brightness** _(Default: 0.7)_  
+Brightness of the position indicator for the cover (right side).  
+Automatically dims to "nightlight_brightness" when the nightlight mode is activated.  
+  
+**cover_color1** _(Default: {255,0,0})_  
+Color 1 for the position indicator of the cover component.  
+  
+**cover_color2** _(Default: {0,255,0})_  
+Color 2 for the position indicator of the cover component.  
   
 &nbsp;  
   
