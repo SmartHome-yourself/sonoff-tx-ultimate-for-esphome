@@ -84,7 +84,8 @@ external_components:
 &nbsp;  
   
 ## Alternative Blind Control
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/9098ad1d-3a6e-40d8-ad03-d1acfde3cf7a)
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/9098ad1d-3a6e-40d8-ad03-d1acfde3cf7a)  
+  
 If you want to use the switch for blind control, you need a slightly different configuration.  
 Especially, the two relays for the motor must be interlocked.  
 This setup works only with the 2- and 3-relay version. In both cases, Relays 1 and 2 are used for motor control, as I couldn't configure interlock dynamically.  
