@@ -84,7 +84,8 @@ external_components:
 &nbsp;  
   
 ## Alternative Jalousie-Steuerung
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/9098ad1d-3a6e-40d8-ad03-d1acfde3cf7a)
+![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/9098ad1d-3a6e-40d8-ad03-d1acfde3cf7a)  
+  
 Wer den Schalter zum steuern von Jalousien einsetzen möchte, benötigt eine etwas abweichende Konfiguration.  
 Vor allem müssen die zwei Relais für den Motor gegeneinander gesperrt werden (interlock).   
 Natürlich funktioniert das nur mit der 2- und 3-Relais-Variante. In beiden Fällen wird für die Motorsteuerung Relais 1 und 2 verwendet, da ich das interlock nicht dynamisch konfigurieren konnte.  
