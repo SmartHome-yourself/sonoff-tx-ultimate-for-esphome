@@ -103,7 +103,10 @@ substitutions:
   cover_close_duration: 25s
   
 packages:
-  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  smarthomeyourself.tx-ultimate:
+    url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
+    file: tx_ultimate_cover.yaml
+    ref: main
   
 esphome:
   name: ${name}
