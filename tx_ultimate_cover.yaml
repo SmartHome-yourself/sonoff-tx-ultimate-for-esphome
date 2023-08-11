@@ -22,8 +22,8 @@ substitutions:
   nightlight_color: "{80,70,0}"
 
   cover_brightness: "0.7"
-  cover_color1: "{255,0,0}"
-  cover_color2: "{0,255,0}"
+  cover_color1: "{0,255,0}"   #open
+  cover_color2: "{255,0,0}"   #close
 
   latitude: "51.132241°"
   longitude: "7.178795°"
