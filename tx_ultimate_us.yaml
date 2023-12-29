@@ -413,6 +413,9 @@ light:
     segments:
       - id: leds
         from: 31
+        to: 31
+      - id: leds
+        from: 0
         to: 8
     effects:
       - addressable_scan:
