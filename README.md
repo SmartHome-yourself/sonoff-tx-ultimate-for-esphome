@@ -42,6 +42,7 @@ The screenshot shows an example of the device in Home Assistant after integratio
 ## Minimal code
 This is the needed code to use the tx ultimate with this component. 
 You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).  
+(Add `_us` to the package name if you want to use the US version of the switch).
 ```
 substitutions:
   name: "shys-tx-ultimate"
