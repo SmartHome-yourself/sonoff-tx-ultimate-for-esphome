@@ -412,11 +412,8 @@ light:
     internal: true
     segments:
       - id: leds
-        from: 0
-        to: 8
-      - id: leds
         from: 31
-        to: 31
+        to: 8
     effects:
       - addressable_scan:
           name: "Scan"
