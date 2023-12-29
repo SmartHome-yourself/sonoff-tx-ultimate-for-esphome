@@ -401,7 +401,7 @@ switch:
   - platform: restart
     name: "${friendly_name} Restart"
 
-llight:
+light:
   - platform: neopixelbus
     type: GRB
     variant: WS2811
