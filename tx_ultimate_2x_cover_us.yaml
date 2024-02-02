@@ -333,7 +333,7 @@ switch:
     name: "${friendly_name} L1"
     pin: ${relay_1_pin}
     restore_mode: RESTORE_DEFAULT_OFF
-    interlock: &interlock_group [relay_1, relay_2]
+    interlock: &interlock_group_1 [relay_1, relay_2]
     internal: true
     on_turn_on:
       then:
@@ -347,7 +347,7 @@ switch:
     name: "${friendly_name} L2"
     pin: ${relay_2_pin}
     restore_mode: RESTORE_DEFAULT_OFF
-    interlock: *interlock_group
+    interlock: *interlock_group_1
     internal: true
     on_turn_on:
       then:
@@ -361,7 +361,7 @@ switch:
     name: "${friendly_name} L3"
     pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
-    interlock: &interlock_group [relay_3, relay_4]
+    interlock: &interlock_group_2 [relay_3, relay_4]
     on_turn_on:
       then:
         - script.execute: refresh_led_default
@@ -374,7 +374,7 @@ switch:
     name: "${friendly_name} L4"
     pin: ${relay_4_pin}
     restore_mode: RESTORE_DEFAULT_OFF
-    interlock: *interlock_group
+    interlock: *interlock_group_2
     on_turn_on:
       then:
         - script.execute: refresh_led_default
