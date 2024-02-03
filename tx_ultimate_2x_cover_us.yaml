@@ -362,6 +362,7 @@ switch:
     pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     interlock: &interlock_group_2 [relay_3, relay_4]
+    internal: true
     on_turn_on:
       then:
         - script.execute: refresh_led_default
@@ -375,6 +376,7 @@ switch:
     pin: ${relay_4_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     interlock: *interlock_group_2
+    internal: true
     on_turn_on:
       then:
         - script.execute: refresh_led_default
