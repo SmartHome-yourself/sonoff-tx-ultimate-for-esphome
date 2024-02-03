@@ -988,7 +988,7 @@ script:
                 else:
                   - if:
                       condition:
-                        lambda: "return pos <= 4;"
+                        lambda: "return pos <= 5;"
                       then:
                         - binary_sensor.template.publish:
                             id: touchfield_2
