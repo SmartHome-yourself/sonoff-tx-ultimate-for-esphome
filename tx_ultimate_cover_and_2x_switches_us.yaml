@@ -979,7 +979,7 @@ script:
           then:
             - if:
                 condition:
-                  lambda: "return pos <= 3;"
+                  lambda: "return pos <= 1;"
                 then:
                   - binary_sensor.template.publish:
                       id: touchfield_1
@@ -988,7 +988,7 @@ script:
                 else:
                   - if:
                       condition:
-                        lambda: "return pos <= 7;"
+                        lambda: "return pos <= 3;"
                       then:
                         - binary_sensor.template.publish:
                             id: touchfield_2
@@ -997,7 +997,7 @@ script:
                       else:
                         - if:
                             condition:
-                              lambda: "return pos <= 11;"
+                              lambda: "return pos <= 7;"
                             then:
                               - binary_sensor.template.publish:
                                   id: touchfield_3
