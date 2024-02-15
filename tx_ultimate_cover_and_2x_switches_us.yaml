@@ -728,6 +728,14 @@ script:
 
       - if:
           condition:
+            lambda: "return id(relay_2).state;"
+          then:
+            - script.execute: led_on_button_right
+          else:
+            - script.execute: led_off_button_right
+      
+      - if:
+          condition:
             lambda: "return (${relay_count}>=3 && id(relay_3).state);"
           then:
             - script.execute: led_on_button_middle
@@ -741,14 +749,6 @@ script:
             - script.execute: led_on_button_middle
           else:
             - script.execute: led_off_button_middle
-
-      - if:
-          condition:
-            lambda: "return id(relay_2).state;"
-          then:
-            - script.execute: led_on_button_right
-          else:
-            - script.execute: led_off_button_right
 
   - id: led_on_button_left
     mode: restart
