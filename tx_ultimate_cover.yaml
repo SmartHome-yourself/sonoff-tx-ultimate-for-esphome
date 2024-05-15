@@ -11,6 +11,9 @@ substitutions:
   cover_open_duration: 25s
   cover_close_duration: 25s
 
+  cover_status_light_duration: 2.4s  # If value bigger then 0 it will turn off status after this period
+
+  vibra_mode: "off"
   vibra_time: 150ms
   button_on_time: 500ms
 
@@ -133,6 +136,14 @@ esphome:
           id: leds_right
           brightness: !lambda "return id(nightlight).state?${nightlight_brightness}:${cover_brightness};"
           effect: "Cover Position"
+      - if:
+          condition:
+            lambda: "return (${cover_status_light_duration} > 0);"
+          then:
+            - delay: cover_status_light_duration
+            - light.turn_off:
+                id: leds_right
+          
 
 esp32:
   board: esp32dev
@@ -310,7 +321,7 @@ binary_sensor:
 switch:
   - platform: gpio
     id: relay_1
-    name: "${friendly_name} L1"
+    name: "L1"
     pin: ${relay_1_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     interlock: &interlock_group [relay_1, relay_2]
@@ -324,7 +335,7 @@ switch:
 
   - platform: gpio
     id: relay_2
-    name: "${friendly_name} L2"
+    name: "L2"
     pin: ${relay_2_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     interlock: *interlock_group
@@ -338,7 +349,7 @@ switch:
 
   - platform: gpio
     id: relay_3
-    name: "${friendly_name} L3"
+    name: "L3"
     pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -351,7 +362,7 @@ switch:
   - platform: gpio
     id: vibra
     pin: ${vibra_motor_pin}
-    name: "${friendly_name} Vibration"
+    name: "Vibration"
     restore_mode: ALWAYS_OFF
     on_turn_on:
       - delay: ${vibra_time}
@@ -569,7 +580,11 @@ tx_ultimate_touch:
         id: handle_release
         pos: !lambda "return touch.x;"
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_release", "Release Position: %d / State: %d", touch.x, touch.state);
@@ -577,7 +592,11 @@ tx_ultimate_touch:
   on_swipe_left:
     - script.execute: led_on_swipe_left
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: swipe_left
@@ -589,7 +608,11 @@ tx_ultimate_touch:
   on_swipe_right:
     - script.execute: led_on_swipe_right
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: swipe_right
@@ -601,7 +624,11 @@ tx_ultimate_touch:
   on_full_touch_release:
     - script.execute: led_on_full_touch
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: multi_touch
@@ -613,7 +640,11 @@ tx_ultimate_touch:
   on_long_touch_release:
     - script.execute: led_on_long_touch
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: long_press
@@ -660,6 +691,13 @@ cover:
 
     stop_action:
       - script.execute: stop_cover
+      - if:
+          condition:
+            lambda: "return (${cover_status_light_duration} > 0);"
+          then:
+            - delay: cover_status_light_duration
+            - light.turn_off:
+                id: leds_right
 
 script:
   - id: open_cover
