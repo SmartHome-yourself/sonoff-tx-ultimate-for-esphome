@@ -8,13 +8,14 @@ substitutions:
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
 
+  vibra_mode: "off"
   vibra_time: 150ms
   button_on_time: 500ms
 
   button_brightness: "0.7"
   button_color: "{0,0,100}"
 
-  nightlight: "on"
+  nightlight: "off"
   nightlight_brightness: "0.2"
   nightlight_color: "{80,70,0}"
 
@@ -259,7 +260,7 @@ binary_sensor:
 switch:
   - platform: gpio
     id: relay_1
-    name: "${friendly_name} L1"
+    name: "L1"
     pin: ${relay_1_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -271,7 +272,7 @@ switch:
 
   - platform: gpio
     id: relay_2
-    name: "${friendly_name} L2"
+    name: "L2"
     pin: ${relay_2_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -283,7 +284,7 @@ switch:
 
   - platform: gpio
     id: relay_3
-    name: "${friendly_name} L3"
+    name: "L3"
     pin: ${relay_3_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -296,7 +297,7 @@ switch:
   - platform: gpio
     id: vibra
     pin: ${vibra_motor_pin}
-    name: "${friendly_name} Vibration"
+    name: "Vibration"
     restore_mode: ALWAYS_OFF
     on_turn_on:
       - delay: ${vibra_time}
@@ -417,6 +418,13 @@ light:
       - id: leds_top
         from: 0
         to: 6
+    effects:
+      - addressable_scan:
+          name: "Scan"
+      - addressable_rainbow:
+          name: "Rainbow"
+          speed: 10
+          width: 20
 
   - platform: partition
     name: "LEDs Top"
@@ -480,7 +488,11 @@ tx_ultimate_touch:
         id: handle_release
         pos: !lambda "return touch.x;"
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - lambda: >
         ESP_LOGD("tx_ultimate_touch.on_release", "Release Position: %d / State: %d", touch.x, touch.state);
@@ -488,7 +500,11 @@ tx_ultimate_touch:
   on_swipe_left:
     - script.execute: led_on_swipe_left
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: swipe_left
@@ -500,7 +516,11 @@ tx_ultimate_touch:
   on_swipe_right:
     - script.execute: led_on_swipe_right
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: swipe_right
@@ -512,7 +532,11 @@ tx_ultimate_touch:
   on_full_touch_release:
     - script.execute: led_on_full_touch
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: multi_touch
@@ -524,7 +548,11 @@ tx_ultimate_touch:
   on_long_touch_release:
     - script.execute: led_on_long_touch
 
-    - switch.turn_on: vibra
+    - if:
+        condition:
+          lambda: 'return "${vibra_mode}" == "on";'
+        then:
+          - switch.turn_on: vibra
 
     - binary_sensor.template.publish:
         id: long_press
