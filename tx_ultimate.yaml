@@ -8,7 +8,7 @@ substitutions:
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
 
-  vibra_mode: "off"
+  vibra_mode: "day"     # Possible values are on, off, day and night (will be implemented soon)
   vibra_time: 150ms
   button_on_time: 500ms
 
@@ -114,7 +114,7 @@ logger:
     uart_debug: INFO
 
 dashboard_import:
-  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
+  package_import_url: github://Zedread/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
   import_full_config: false
 
 api:
@@ -168,7 +168,10 @@ globals:
     type: int [3]
     restore_value: no
     initial_value: ${touch_color}    
-
+  - id: sun_position
+    type: int
+    restore_value: no
+    initial_value: "0"
 
 
 binary_sensor:
@@ -425,6 +428,10 @@ light:
           name: "Rainbow"
           speed: 10
           width: 20
+      - pulse:
+          name: "Pulse"
+          transition_length: 1.4s
+          update_interval: 1s
 
   - platform: partition
     name: "LEDs Top"
@@ -488,9 +495,11 @@ tx_ultimate_touch:
         id: handle_release
         pos: !lambda "return touch.x;"
 
+    - script.execute: update_sun_position
+
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
         then:
           - switch.turn_on: vibra
 
@@ -500,9 +509,11 @@ tx_ultimate_touch:
   on_swipe_left:
     - script.execute: led_on_swipe_left
 
+    - script.execute: update_sun_position
+
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
         then:
           - switch.turn_on: vibra
 
@@ -516,9 +527,11 @@ tx_ultimate_touch:
   on_swipe_right:
     - script.execute: led_on_swipe_right
 
+    - script.execute: update_sun_position
+
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
         then:
           - switch.turn_on: vibra
 
@@ -532,9 +545,11 @@ tx_ultimate_touch:
   on_full_touch_release:
     - script.execute: led_on_full_touch
 
+    - script.execute: update_sun_position
+
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
         then:
           - switch.turn_on: vibra
 
@@ -548,9 +563,11 @@ tx_ultimate_touch:
   on_long_touch_release:
     - script.execute: led_on_long_touch
 
+    - script.execute: update_sun_position
+
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
         then:
           - switch.turn_on: vibra
 
@@ -570,6 +587,7 @@ time:
         minutes: /5
         then:
           - script.execute: refresh_nightlight
+          - script.execute: update_sun_position
 
 sun:
   latitude: ${latitude}
@@ -910,3 +928,14 @@ script:
                                   blue: 1
                         - delay: 1s
                         - light.turn_off: leds
+
+  - id: update_sun_position
+    mode: restart
+    then:
+      - if:
+          condition:
+            - sun.is_below_horizon:
+          then:
+            lambda: id(sun_position) = 0;
+          else:
+            lambda: id(sun_position) = 1;
