@@ -13,7 +13,7 @@ substitutions:
 
   cover_status_light_duration: 2.4s  # If value bigger then 0 it will turn off status after this period
 
-  vibra_mode: "off"
+  vibra_mode: "day"     # Possible values are on, off, day and night
   vibra_time: 150ms
   button_on_time: 500ms
 
@@ -162,7 +162,7 @@ logger:
     uart_debug: INFO
 
 dashboard_import:
-  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  package_import_url: github://Zedread/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
   import_full_config: false
 
 api:
@@ -231,6 +231,10 @@ globals:
     type: int [3]
     restore_value: no
     initial_value: ${cover_color2}
+  - id: sun_position
+    type: int
+    restore_value: no
+    initial_value: "0"
 
 binary_sensor:
   - platform: template
@@ -582,7 +586,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -594,7 +598,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -610,7 +614,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -626,7 +630,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -642,7 +646,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return "${vibra_mode}" == "on";'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -1013,3 +1017,14 @@ script:
           } else {
             id(my_cover).make_call().set_command_stop().perform();
           }
+
+  - id: update_sun_position
+    mode: restart
+    then:
+      - if:
+          condition:
+            - sun.is_below_horizon:
+          then:
+            lambda: id(sun_position) = 0;
+          else:
+            lambda: id(sun_position) = 1;

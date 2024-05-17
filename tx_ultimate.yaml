@@ -8,7 +8,7 @@ substitutions:
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
 
-  vibra_mode: "day"     # Possible values are on, off, day and night (will be implemented soon)
+  vibra_mode: "day"     # Possible values are on, off, day and night
   vibra_time: 150ms
   button_on_time: 500ms
 
@@ -499,7 +499,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -513,7 +513,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -531,7 +531,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -549,7 +549,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
@@ -567,7 +567,7 @@ tx_ultimate_touch:
 
     - if:
         condition:
-          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1);'
+          lambda: 'return ("${vibra_mode}" == "on") || ("${vibra_mode}" == "day" && id(sun_position) == 1) || ("${vibra_mode}" == "night" && id(sun_position) == 0);'
         then:
           - switch.turn_on: vibra
 
