@@ -26,6 +26,11 @@ substitutions:
   touch_color: "{0,100,100}"
   touch_effect: "Scan"
 
+  boot_brightness: "0.7"
+  boot_color1: "{100,0,0}"
+  boot_color2: "{100,100,0}"
+  boot_effect: "Scan"
+
   long_press_brightness: "1"
   long_press_color: "{100,0,0}"
   long_press_effect: ""
@@ -71,8 +76,31 @@ esphome:
     version: "1.0"
 
   on_boot:
-    priority: -100
+    priority: 700 #-100
     then:
+      - light.turn_on:
+          id: leds_top
+          brightness: ${boot_brightness}
+          red: !lambda "return id(boot_color1)[0]/100.0;"
+          green: !lambda "return id(boot_color1)[1]/100.0;"
+          blue: !lambda "return id(boot_color1)[2]/100.0;"
+          effect: ${boot_effect}
+      - wait_until:
+          condition:
+            wifi.connected:
+          timeout: 1min
+      - light.turn_on:
+          id: leds_top
+          brightness: ${boot_brightness}
+          red: !lambda "return id(boot_color2)[0]/100.0;"
+          green: !lambda "return id(boot_color2)[1]/100.0;"
+          blue: !lambda "return id(boot_color2)[2]/100.0;"
+          effect: ${boot_effect}
+      - wait_until:
+          condition:
+            api.connected:
+          timeout: 10s
+
       - binary_sensor.template.publish:
           id: touchfield_1
           state: OFF
