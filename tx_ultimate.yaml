@@ -8,12 +8,18 @@ substitutions:
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
 
+  use_fake_relay_1: "false"
+  use_fake_relay_2: "false"
+  use_fake_relay_3: "false"
+
   vibra_mode: "day"     # Possible values are on, off, day and night
   vibra_time: 150ms
   button_on_time: 500ms
 
   button_brightness: "0.7"
   button_color: "{0,0,100}"
+
+  button_fake_relay_color: "{0,100,0}"
 
   nightlight: "off"
   nightlight_brightness: "0.2"
@@ -176,6 +182,10 @@ globals:
     type: int [3]
     restore_value: no
     initial_value: ${button_color}
+  - id: button_fake_relay_color
+    type: int [3]
+    restore_value: no
+    initial_value: ${button_fake_relay_color}
   - id: long_press_color
     type: int [3]
     restore_value: no
@@ -195,7 +205,15 @@ globals:
   - id: touch_color
     type: int [3]
     restore_value: no
-    initial_value: ${touch_color}    
+    initial_value: ${touch_color}   
+  - id: boot_color1
+    type: int [3]
+    restore_value: no
+    initial_value: ${boot_color1}
+  - id: boot_color2
+    type: int [3]
+    restore_value: no
+    initial_value: ${boot_color2} 
   - id: sun_position
     type: int
     restore_value: no
@@ -211,7 +229,13 @@ binary_sensor:
           condition:
             lambda: "return ${toggle_relay_1_on_touch};"
           then:
-            - switch.toggle: relay_1
+            - if:
+                condition:
+                  lambda: "return ${use_fake_relay_1};"
+                then:
+                  - switch.toggle: fake_relay_1
+                else:
+                  - switch.toggle: relay_1
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_1
@@ -226,7 +250,13 @@ binary_sensor:
           condition:
             lambda: "return ${toggle_relay_2_on_touch};"
           then:
-            - switch.toggle: relay_2
+            - if:
+                condition:
+                  lambda: "return ${use_fake_relay_2};"
+                then:
+                  - switch.toggle: fake_relay_2
+                else:
+                  - switch.toggle: relay_2
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_2
@@ -241,7 +271,13 @@ binary_sensor:
           condition:
             lambda: "return ${toggle_relay_3_on_touch};"
           then:
-            - switch.toggle: relay_3
+            - if:
+                condition:
+                  lambda: "return ${use_fake_relay_3};"
+                then:
+                  - switch.toggle: fake_relay_3
+                else:
+                  - switch.toggle: relay_3
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_3
@@ -375,6 +411,42 @@ switch:
       then:
         - script.execute: refresh_led_default
 
+  - platform: template
+    name: "Fake L1"
+    id: fake_relay_1
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+
+  - platform: template
+    name: "Fake L2"
+    id: fake_relay_2
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+  
+  - platform: template
+    name: "Fake L3"
+    id: fake_relay_3
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+  
   - platform: restart
     name: "${friendly_name} Restart"
 
@@ -647,7 +719,7 @@ script:
 
       - if:
           condition:
-            lambda: "return (${relay_count}>1 && id(relay_1).state) ;"
+            lambda: "return (${relay_count}>1 && (id(relay_1).state || id(fake_relay_1).state));" # Might want to crosscheck with the variables of touch, and fake relay
           then:
             - script.execute: led_on_button_left
           else:
@@ -655,7 +727,7 @@ script:
 
       - if:
           condition:
-            lambda: "return (${relay_count}==3 && id(relay_2).state) || (${relay_count}==1 && id(relay_1).state);"
+            lambda: "return (${relay_count}==3 && (id(relay_2).state || id(fake_relay_2).state)) || (${relay_count}==1 && (id(relay_1).state || id(fake_relay_1).state));"
           then:
             - script.execute: led_on_button_middle
           else:
@@ -663,7 +735,7 @@ script:
 
       - if:
           condition:
-            lambda: "return (${relay_count}==2 && id(relay_2).state) || (${relay_count}==3 && id(relay_3).state);"
+            lambda: "return (${relay_count}==2 && (id(relay_2).state || id(fake_relay_2).state)) || (${relay_count}==3 && (id(relay_3).state || id(fake_relay_3).state));"
           then:
             - script.execute: led_on_button_right
           else:
@@ -680,33 +752,65 @@ script:
   - id: led_on_button_left
     mode: restart
     then:
-      - light.turn_on:
-          id: leds_button_left
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/100.0;"
-          green: !lambda "return id(button_color)[1]/100.0;"
-          blue:  !lambda "return id(button_color)[2]/100.0;"
+      - if:
+          condition:
+            lambda: "return id(relay_1).state;"  #Reason why i check the relay instead of the fake, its because i consider flagging the relay live to be more important
+          then:
+            - light.turn_on:
+                id: leds_button_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/100.0;"
+                green: !lambda "return id(button_color)[1]/100.0;"
+                blue:  !lambda "return id(button_color)[2]/100.0;"
+          else:
+            - light.turn_on:
+                id: leds_button_left
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_fake_relay_color)[0]/100.0;"
+                green: !lambda "return id(button_fake_relay_color)[1]/100.0;"
+                blue:  !lambda "return id(button_fake_relay_color)[2]/100.0;"
 
   - id: led_on_button_middle
     mode: restart
     then:
-      - light.turn_on:
-          id: leds_button_middle
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/100.0;"
-          green: !lambda "return id(button_color)[1]/100.0;"
-          blue:  !lambda "return id(button_color)[2]/100.0;"
+      - if:
+          condition:
+            lambda: "return (${relay_count}==3 && (id(relay_2).state)) || (${relay_count}==1 && (id(relay_1).state));"
+          then:
+            - light.turn_on:
+                id: leds_button_middle
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/100.0;"
+                green: !lambda "return id(button_color)[1]/100.0;"
+                blue:  !lambda "return id(button_color)[2]/100.0;"
+          else:
+            - light.turn_on:
+                id: leds_button_middle
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_fake_relay_color)[0]/100.0;"
+                green: !lambda "return id(button_fake_relay_color)[1]/100.0;"
+                blue:  !lambda "return id(button_fake_relay_color)[2]/100.0;"
 
   - id: led_on_button_right
     mode: restart
     then:
-      - light.turn_on:
-          id: leds_button_right
-          brightness: ${button_brightness}
-          red: !lambda "return id(button_color)[0]/100.0;"
-          green: !lambda "return id(button_color)[1]/100.0;"
-          blue:  !lambda "return id(button_color)[2]/100.0;"
-
+      - if:
+          condition:
+            lambda: "return (${relay_count}==2 && (id(relay_2).state)) || (${relay_count}==3 && (id(relay_3).state));"
+          then:
+            - light.turn_on:
+                id: leds_button_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_color)[0]/100.0;"
+                green: !lambda "return id(button_color)[1]/100.0;"
+                blue:  !lambda "return id(button_color)[2]/100.0;"
+          else:
+            - light.turn_on:
+                id: leds_button_right
+                brightness: ${button_brightness}
+                red: !lambda "return id(button_fake_relay_color)[0]/100.0;"
+                green: !lambda "return id(button_fake_relay_color)[1]/100.0;"
+                blue:  !lambda "return id(button_fake_relay_color)[2]/100.0;"
 
   - id: led_off_button_left
     mode: restart
