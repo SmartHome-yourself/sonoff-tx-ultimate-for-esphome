@@ -168,6 +168,7 @@ dashboard_import:
 api:
 
 ota:
+  platform: esphome
 
 wifi:
   ap:
