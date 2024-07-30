@@ -81,7 +81,7 @@ esphome:
   friendly_name: ${friendly_name}
   project:
     name: smarthomeyourself.tx_ultimate_cover
-    version: "1.0"
+    version: "1.1"
     
   on_boot:
     priority: 700 #-100
