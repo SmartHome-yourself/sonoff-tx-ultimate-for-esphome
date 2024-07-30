@@ -140,7 +140,7 @@ esphome:
           condition:
             lambda: "return (${cover_status_light_duration} > 0);"
           then:
-            - delay: cover_status_light_duration
+            - delay: $(cover_status_light_duration)
             - light.turn_off:
                 id: leds_right
           
