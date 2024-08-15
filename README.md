@@ -57,7 +57,9 @@ esphome:
   name_add_mac_suffix: false
 
 api:
+
 ota:
+ - platform: esphome
 
 wifi:
   ssid: !secret wifi_ssid
@@ -116,7 +118,9 @@ esphome:
   name_add_mac_suffix: false
 
 api:
+
 ota:
+ - platform: esphome
 
 wifi:
   ssid: !secret wifi_ssid
