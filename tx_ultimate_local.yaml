@@ -61,6 +61,7 @@ substitutions:
 
   touchpanel_power_pin: GPIO5
 
+
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
@@ -440,7 +441,7 @@ media_player:
     dac_type: external
     i2s_dout_pin: ${audio_sdata_pin}
     i2s_audio_id: audio_i2s
-    i2s_comm_fmt: lsb    
+    i2s_comm_fmt: lsb
     mode: mono
 
 i2s_audio:
@@ -534,7 +535,9 @@ tx_ultimate_touch:
 
 time:
   - platform: homeassistant
+    id: homeassistant_time
   - platform: sntp
+    id: sntp_time
     on_time:
       # Every 5 minutes
       - seconds: 0

@@ -136,7 +136,7 @@ external_components:
       url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
       ref: main
     components: [tx_ultimate_touch]
-    
+
 
 
 globals:
@@ -536,7 +536,9 @@ tx_ultimate_touch:
 
 time:
   - platform: homeassistant
+    id: homeassistant_time
   - platform: sntp
+    id: sntp_time
     on_time:
       # Every 5 minutes
       - seconds: 0
