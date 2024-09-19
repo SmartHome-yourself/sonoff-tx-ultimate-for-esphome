@@ -721,15 +721,25 @@ script:
           green: !lambda "return id(button_color)[1]/100.0;"
           blue:  !lambda "return id(button_color)[2]/100.0;"
 
-  - id: led_on_button_middle
+  - id: led_on_button_middle_left
     mode: restart
     then:
       - light.turn_on:
-          id: leds_button_middle
+          id: leds_button_middle_left
           brightness: ${button_brightness}
           red: !lambda "return id(button_color)[0]/100.0;"
           green: !lambda "return id(button_color)[1]/100.0;"
           blue:  !lambda "return id(button_color)[2]/100.0;"
+
+  - id: led_on_button_middle_right
+    mode: restart
+    then:
+      - light.turn_on:
+          id: leds_button_middle_right
+          brightness: ${button_brightness}
+          red: !lambda "return id(button_color)[0]/100.0;"
+          green: !lambda "return id(button_color)[1]/100.0;"
+          blue: !lambda "return id(button_color)[2]/100.0;"
 
   - id: led_on_button_right
     mode: restart
@@ -759,7 +769,7 @@ script:
             - light.turn_off:
                 id: leds_button_left
 
-  - id: led_off_button_middle
+  - id: led_off_button_middle_left
     mode: restart
     then:
       - if:
@@ -767,7 +777,7 @@ script:
             lambda: "return id(nightlight).state || id(nightlight_active).state;"
           then:
             - light.turn_on:
-                id: leds_button_middle
+                id: leds_button_middle_left
                 brightness: ${nightlight_brightness}
                 red: !lambda "return id(nightlight_color)[0]/100.0;"
                 green: !lambda "return id(nightlight_color)[1]/100.0;"
@@ -775,7 +785,24 @@ script:
           else:
             - light.turn_off:
                 id: leds_button_middle
+                id: leds_button_middle_left
 
+  - id: led_off_button_middle_right
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+          then:
+            - light.turn_on:
+                id: leds_button_middle_right
+                brightness: ${nightlight_brightness}
+                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                green: !lambda "return id(nightlight_color)[1]/100.0;"
+                blue: !lambda "return id(nightlight_color)[2]/100.0;"
+          else:
+            - light.turn_off:
+                id: leds_button_middle_right
 
   - id: led_off_button_right
     mode: restart
