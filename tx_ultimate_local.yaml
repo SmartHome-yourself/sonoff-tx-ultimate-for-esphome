@@ -615,27 +615,93 @@ script:
 
       - if:
           condition:
-            lambda: "return (${relay_count}>1 && id(relay_1).state) ;"
+            lambda: "return ${relay_count}==1;"
           then:
-            - script.execute: led_on_button_left
-          else:
-            - script.execute: led_off_button_left
+            - if:
+                condition:
+                  lambda: "return id(relay_1).state;"
+                then:
+                  - script.execute: led_on_button_middle_right
+                else:
+                  - script.execute: led_off_button_middle_right
 
       - if:
           condition:
-            lambda: "return (${relay_count}==3 && id(relay_2).state) || (${relay_count}==1 && id(relay_1).state);"
+            lambda: "return ${relay_count}==2;"
           then:
-            - script.execute: led_on_button_middle
-          else:
-            - script.execute: led_off_button_middle
+            - if:
+                condition:
+                  lambda: "return (id(relay_1).state);"
+                then:
+                  - script.execute: led_on_button_left
+                else:
+                  - script.execute: led_off_button_left
+            - if:
+                condition:
+                  lambda: "return id(relay_2).state;"
+                then:
+                  - script.execute: led_on_button_right
+                else:
+                  - script.execute: led_off_button_right
 
       - if:
           condition:
-            lambda: "return (${relay_count}==2 && id(relay_2).state) || (${relay_count}==3 && id(relay_3).state);"
+            lambda: "return ${relay_count}==3;"
           then:
-            - script.execute: led_on_button_right
-          else:
-            - script.execute: led_off_button_right
+            - if:
+                condition:
+                  lambda: "return (id(relay_1).state);"
+                then:
+                  - script.execute: led_on_button_left
+                else:
+                  - script.execute: led_off_button_left
+            - if:
+                condition:
+                  lambda: "return id(relay_2).state;"
+                then:
+                  - script.execute: led_on_button_middle_right
+                else:
+                  - script.execute: led_off_button_middle_right
+            - if:
+                condition:
+                  lambda: "return id(relay_3).state;"
+                then:
+                  - script.execute: led_on_button_right
+                else:
+                  - script.execute: led_off_button_right
+
+      - if:
+          condition:
+            lambda: "return ${relay_count}==4;"
+          then:
+            - if:
+                condition:
+                  lambda: "return (id(relay_1).state);"
+                then:
+                  - script.execute: led_on_button_left
+                else:
+                  - script.execute: led_off_button_left
+            - if:
+                condition:
+                  lambda: "return id(relay_2).state;"
+                then:
+                  - script.execute: led_on_button_middle_left
+                else:
+                  - script.execute: led_off_button_middle_left
+            - if:
+                condition:
+                  lambda: "return id(relay_3).state;"
+                then:
+                  - script.execute: led_on_button_middle_right
+                else:
+                  - script.execute: led_off_button_middle_right
+            - if:
+                condition:
+                  lambda: "return id(relay_4).state;"
+                then:
+                  - script.execute: led_on_button_right
+                else:
+                  - script.execute: led_off_button_right
 
       - if:
           condition:
