@@ -170,9 +170,7 @@ globals:
   - id: touch_color
     type: int [3]
     restore_value: no
-    initial_value: ${touch_color}    
-
-
+    initial_value: ${touch_color}
 
 binary_sensor:
   - platform: template
