@@ -7,6 +7,7 @@ substitutions:
   toggle_relay_1_on_touch: "true"
   toggle_relay_2_on_touch: "true"
   toggle_relay_3_on_touch: "true"
+  toggle_relay_4_on_touch: "true"
 
   vibra_time: 150ms
   button_on_time: 500ms
@@ -80,6 +81,9 @@ esphome:
           state: OFF
       - binary_sensor.template.publish:
           id: touchfield_3
+          state: OFF
+      - binary_sensor.template.publish:
+          id: touchfield_4
           state: OFF
       - binary_sensor.template.publish:
           id: multi_touch
@@ -217,6 +221,21 @@ binary_sensor:
       - script.execute: refresh_led_default
 
   - platform: template
+    name: "Touchfield 4"
+    id: touchfield_4
+    on_press:
+      - if:
+          condition:
+            lambda: "return ${toggle_relay_4_on_touch};"
+          then:
+            - switch.toggle: relay_4
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: touchfield_4
+          state: OFF
+      - script.execute: refresh_led_default
+
+  - platform: template
     name: "Swipe left"
     id: swipe_left
     on_press:
@@ -285,6 +304,18 @@ switch:
     id: relay_3
     name: "${friendly_name} L3"
     pin: ${relay_3_pin}
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+
+  - platform: gpio
+    id: relay_4
+    name: "${friendly_name} L4"
+    pin: ${relay_4_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
       then:
