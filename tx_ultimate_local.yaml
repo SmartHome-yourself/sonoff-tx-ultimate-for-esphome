@@ -599,7 +599,7 @@ script:
 
       - if:
           condition:
-            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+            lambda: "return (id(nightlight).state || id(nightlight_active).state);"
           then:
             - script.execute: led_on_nightlight
           else:
@@ -641,7 +641,7 @@ script:
     then:
       - if:
           condition:
-            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+            lambda: "return (id(nightlight).state || id(nightlight_active).state);"
           then:
             - light.turn_on:
                 id: leds_button_left
@@ -658,7 +658,7 @@ script:
     then:
       - if:
           condition:
-            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+            lambda: "return (id(nightlight).state || id(nightlight_active).state);"
           then:
             - light.turn_on:
                 id: leds_button_middle
@@ -676,7 +676,7 @@ script:
     then:
       - if:
           condition:
-            lambda: "return id(nightlight).state || id(nightlight_active).state;"
+            lambda: "return (id(nightlight).state || id(nightlight_active).state);"
           then:
             - light.turn_on:
                 id: leds_button_right
