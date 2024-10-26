@@ -323,7 +323,7 @@ switch:
     id: nightlight
     internal: true
     optimistic: true
-    restore_mode: RESTORE_DEFAULT_OFF
+    restore_mode: ALWAYS_OFF
     on_turn_on:
       then:
         - script.execute: refresh_led_default
