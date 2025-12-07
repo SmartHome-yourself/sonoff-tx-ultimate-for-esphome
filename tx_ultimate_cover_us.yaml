@@ -512,10 +512,12 @@ light:
           name: "Cover Position"
           update_interval: 500ms
           lambda: |-
+            using esphome::Color;
+
             int16_t pos = (int16_t)round(id(my_cover).position * 7);
-            it.range(7-pos, 7) = ESPColor(id(cover_color1)[0],id(cover_color1)[1],id(cover_color1)[2]);
-            if (pos < 7){
-              it.range(0, 7-pos) = ESPColor(id(cover_color2)[0],id(cover_color2)[1],id(cover_color2)[2]);
+            it.range(7 - pos, 7) = Color(id(cover_color1)[0], id(cover_color1)[1], id(cover_color1)[2]);
+            if (pos < 7) {
+              it.range(0, 7 - pos) = Color(id(cover_color2)[0], id(cover_color2)[1], id(cover_color2)[2]);
             }
 
 media_player:
