@@ -535,9 +535,9 @@ light:
           update_interval: 500ms
           lambda: |-
             int16_t pos = (int16_t)round(id(my_cover_1).position * 7);
-            it.range(7-pos, 7) = ESPColor(id(cover_1_color1)[0],id(cover_1_color1)[1],id(cover_1_color1)[2]);
+            it.range(7-pos, 7) = esphome::Color(id(cover_1_color1)[0],id(cover_1_color1)[1],id(cover_1_color1)[2]);
             if (pos < 7){
-              it.range(0, 7-pos) = ESPColor(id(cover_1_color2)[0],id(cover_1_color2)[1],id(cover_1_color2)[2]);
+              it.range(0, 7-pos) = esphome::Color(id(cover_1_color2)[0],id(cover_1_color2)[1],id(cover_1_color2)[2]);
             }
 
   - platform: partition
@@ -558,9 +558,9 @@ light:
           update_interval: 500ms
           lambda: |-
             int16_t pos = (int16_t)round(id(my_cover_2).position * 7);
-            it.range(7-pos, 7) = ESPColor(id(cover_2_color1)[0],id(cover_2_color1)[1],id(cover_2_color1)[2]);
+            it.range(7-pos, 7) = esphome::Color(id(cover_2_color1)[0],id(cover_2_color1)[1],id(cover_2_color1)[2]);
             if (pos < 7){
-              it.range(0, 7-pos) = ESPColor(id(cover_2_color2)[0],id(cover_2_color2)[1],id(cover_2_color2)[2]);
+              it.range(0, 7-pos) = esphome::Color(id(cover_2_color2)[0],id(cover_2_color2)[1],id(cover_2_color2)[2]);
             }
 
 media_player:
