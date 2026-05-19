@@ -1,6 +1,6 @@
 substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "TX Ultimate"
+  name: "shys-txult-local-us"
+  friendly_name: "TX Ultimate Local US"
 
   relay_count: "2"
 
@@ -23,7 +23,7 @@ substitutions:
 
   long_press_brightness: "1"
   long_press_color: "{100,0,0}"
-  long_press_effect: ""
+  long_press_effect: "Scan"
 
   multi_touch_brightness: "1"
   multi_touch_color: "{0,0,0}"
@@ -31,11 +31,11 @@ substitutions:
 
   swipe_left_brightness: "1"
   swipe_left_color: "{0,100,0}"
-  swipe_left_effect: ""
+  swipe_left_effect: "Scan"
 
   swipe_right_brightness: "1"
   swipe_right_color: "{100,0,70}"
-  swipe_right_effect: ""
+  swipe_right_effect: "Scan"
 
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
@@ -62,7 +62,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   project:
-    name: smarthomeyourself.tx_ultimate
+    name: smarthomeyourself.tx_ult_local_us
     version: "1.0"
 
   on_boot:
@@ -432,15 +432,14 @@ light:
           speed: 10
           width: 20
 
-media_player:
+speaker:
   - platform: i2s_audio
     id: media_out
-    name: ${friendly_name} Player
     dac_type: external
     i2s_dout_pin: ${audio_sdata_pin}
     i2s_audio_id: audio_i2s
-    i2s_comm_fmt: lsb
-    mode: mono
+    i2s_comm_fmt: i2s_lsb
+    channel: mono
 
 i2s_audio:
   id: audio_i2s
@@ -574,6 +573,9 @@ script:
             - light.turn_on: 
                 id: leds_top
                 brightness: ${nightlight_brightness}
+                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                green: !lambda "return id(nightlight_color)[1]/100.0;"
+                blue: !lambda "return id(nightlight_color)[2]/100.0;"
                 effect: "None"
             - script.execute: led_on_nightlight
           else:
@@ -711,7 +713,8 @@ script:
     mode: restart
     then:
       - light.turn_off:
-          id: leds_top
+          id: leds
+      - script.execute: refresh_led_default
 
   - id: led_on_touch
     mode: restart

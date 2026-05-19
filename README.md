@@ -39,10 +39,28 @@ The screenshot shows an example of the device in Home Assistant after integratio
 
 &nbsp;  
   
+## Package variants and device names
+
+The standard package uses the hostname `shys-tx-ultimate` (`tx_ultimate.yaml`).  
+All other variants use shorter hostnames (ESPHome limit: 31 characters):
+
+| Package file | Default `name` | Default `friendly_name` |
+|---|---|---|
+| `tx_ultimate.yaml` | `shys-tx-ultimate` | TX Ultimate |
+| `tx_ult_us.yaml` | `shys-txult-us` | TX Ultimate US |
+| `tx_ult_cover.yaml` | `shys-txult-cover` | TX Ultimate Cover |
+| `tx_ult_cover_us.yaml` | `shys-txult-cover-us` | TX Ultimate Cover US |
+| `tx_ult_local.yaml` | `shys-txult-local` | TX Ultimate Local |
+| `tx_ult_local_us.yaml` | `shys-txult-local-us` | TX Ultimate Local US |
+| `tx_ult_cover_2xsw_us.yaml` | `shys-txult-cover-2xsw-us` | TX Ultimate Cover + 2 Switches US |
+| `tx_ult_2xcov_us.yaml` | `shys-txult-2xcov-us` | TX Ultimate 2 Covers US |
+
+&nbsp;  
+  
 ## Minimal code
 This is the needed code to use the tx ultimate with this component. 
 You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).  
-(Add `_us` to the package name if you want to use the US version of the switch).
+(Add `_us` to the package file name if you want to use the US version of the switch, e.g. `tx_ult_us.yaml` instead of `tx_ultimate.yaml`).
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -73,7 +91,7 @@ wifi:
 &nbsp;  
   
 ## Local use in ESPHome
-You can create your Project yourself without usage of my package by copy the [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) into your project.  
+You can create your Project yourself without usage of my package by copy the [tx_ult_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ult_local.yaml) into your project.  
 If you want to use the custom component localy, you can copy the [tx_ultimate_touch folder](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) into your esphome directory or some subfolder and include it local.
 Then you only have to change the source of the external_components entry.
 
@@ -100,8 +118,8 @@ The timings for `cover_open_duration` and `cover_close_duration` should be as ac
 
 ```
 substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
+  name: "shys-txult-cover"
+  friendly_name: "SHYS TX Ultimate Cover"
   relay_count: "2"
   
   cover_open_duration: 25s
@@ -110,7 +128,7 @@ substitutions:
 packages:
   smarthomeyourself.tx-ultimate:
     url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
-    file: tx_ultimate_cover.yaml
+    file: tx_ult_cover.yaml
     ref: main
   
 esphome:
@@ -137,7 +155,7 @@ wifi:
 All substitutions are optional, but I recommend specifying at least name, friendly_name, and relay_count.  
 The pins are already specified by the hardware and therefore do not actually have to be changed.  
   
-## Standard Configuration (tx_ultimate.yaml / tx_ultimate_local.yaml)
+## Standard Configuration (tx_ultimate.yaml / tx_ult_local.yaml)
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -205,12 +223,12 @@ substitutions:
 ```
   
   
-## Cover Configuration (tx_ultimate_cover.yaml)
+## Cover Configuration (tx_ult_cover.yaml)
 Parameters differ slightly for blinds.
 
 ```
 substitutions:
-  name: "shys-tx-ultimate-cover"
+  name: "shys-txult-cover"
   friendly_name: "TX Ultimate Cover"
 
   relay_count: "3"

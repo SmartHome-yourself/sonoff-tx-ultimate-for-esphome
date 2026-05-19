@@ -1,15 +1,16 @@
 substitutions:
-  name: "shys-tx-ultimate-cover"
-  friendly_name: "TX Ultimate Cover"
+  name: "shys-txult-cover-2xsw-us"
+  friendly_name: "TX Ultimate Cover + 2 Switches US"
 
-  relay_count: "3"
-
-  # only used on 3-way switch (relay_count = 3)
-  toggle_relay_3_on_touch: "true"
+  relay_count: "4" # Needs at least 4 relays
 
   cover_name: "My Cover"
   cover_open_duration: 25s
   cover_close_duration: 25s
+
+  cover_brightness: "0.7"
+  cover_color1: "{0,255,0}"   #open
+  cover_color2: "{255,0,0}"   #close
 
   vibra_time: 150ms
   button_on_time: 500ms
@@ -20,10 +21,6 @@ substitutions:
   nightlight: "on"
   nightlight_brightness: "0.2"
   nightlight_color: "{80,70,0}"
-
-  cover_brightness: "0.7"
-  cover_color1: "{0,255,0}"   #open
-  cover_color2: "{255,0,0}"   #close
 
   latitude: "51.132241°"
   longitude: "7.178795°"
@@ -39,7 +36,7 @@ substitutions:
 
   long_press_brightness: "1"
   long_press_color: "{100,0,0}"
-  long_press_effect: ""
+  long_press_effect: "Scan"
 
   multi_touch_brightness: "1"
   multi_touch_color: "{0,0,0}"
@@ -77,7 +74,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   project:
-    name: smarthomeyourself.tx_ultimate_cover
+    name: smarthomeyourself.tx_ult_cover_2xsw_us
     version: "1.0"
     
   on_boot:
@@ -116,6 +113,9 @@ esphome:
           id: touchfield_3
           state: OFF
       - binary_sensor.template.publish:
+          id: touchfield_4
+          state: OFF
+      - binary_sensor.template.publish:
           id: multi_touch
           state: OFF
       - binary_sensor.template.publish:
@@ -130,7 +130,7 @@ esphome:
       - script.execute: refresh_nightlight
       - script.execute: refresh_led_default
       - light.turn_on:
-          id: leds_right
+          id: leds_left
           brightness: !lambda "return id(nightlight).state?${nightlight_brightness}:${cover_brightness};"
           effect: "Cover Position"
 
@@ -151,7 +151,7 @@ logger:
     uart_debug: INFO
 
 dashboard_import:
-  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ult_cover_2xsw_us.yaml@main
   import_full_config: false
 
 api:
@@ -239,18 +239,7 @@ binary_sensor:
     name: "Touchfield 2"
     id: touchfield_2
     on_press:
-      - if:
-          condition:
-            lambda: "return (${relay_count}==3);"
-          then:
-            - if:
-                condition:
-                  lambda: "return ${toggle_relay_3_on_touch};"
-                then:
-                  - switch.toggle: relay_3
-          else:
-            - script.execute: cover_close_action
-
+      - script.execute: cover_close_action
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_2
@@ -261,10 +250,21 @@ binary_sensor:
     name: "Touchfield 3"
     id: touchfield_3
     on_press:
-      - script.execute: cover_close_action
+      - switch.toggle: relay_3
       - delay: ${button_on_time}
       - binary_sensor.template.publish:
           id: touchfield_3
+          state: OFF
+      - script.execute: refresh_led_default
+
+  - platform: template
+    name: "Touchfield 4"
+    id: touchfield_4
+    on_press:
+      - switch.toggle: relay_4
+      - delay: ${button_on_time}
+      - binary_sensor.template.publish:
+          id: touchfield_4
           state: OFF
       - script.execute: refresh_led_default
 
@@ -341,6 +341,18 @@ switch:
     id: relay_3
     name: "${friendly_name} L3"
     pin: ${relay_3_pin}
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      then:
+        - script.execute: refresh_led_default
+    on_turn_off:
+      then:
+        - script.execute: refresh_led_default
+
+  - platform: gpio
+    id: relay_4
+    name: "${friendly_name} L4"
+    pin: ${relay_4_pin}
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
       then:
@@ -494,6 +506,15 @@ light:
           name: "Pulse"
           transition_length: 600ms
           update_interval: 300ms
+      - addressable_lambda:
+          name: "Cover Position"
+          update_interval: 500ms
+          lambda: |-
+            int16_t pos = (int16_t)round(id(my_cover).position * 7);
+            it.range(7-pos, 7) = esphome::Color(id(cover_color1)[0],id(cover_color1)[1],id(cover_color1)[2]);
+            if (pos < 7){
+              it.range(0, 7-pos) = esphome::Color(id(cover_color2)[0],id(cover_color2)[1],id(cover_color2)[2]);
+            }
 
   - platform: partition
     name: "LEDs Right"
@@ -508,25 +529,15 @@ light:
           name: "Pulse"
           transition_length: 600ms
           update_interval: 300ms
-      - addressable_lambda:
-          name: "Cover Position"
-          update_interval: 500ms
-          lambda: |-
-            int16_t pos = (int16_t)round(id(my_cover).position * 7);
-            it.range(7-pos, 7) = esphome::Color(id(cover_color1)[0],id(cover_color1)[1],id(cover_color1)[2]);
-            if (pos < 7){
-              it.range(0, 7-pos) = esphome::Color(id(cover_color2)[0],id(cover_color2)[1],id(cover_color2)[2]);
-            }
 
-media_player:
+speaker:
   - platform: i2s_audio
     id: media_out
-    name: ${friendly_name} Player
     dac_type: external
     i2s_dout_pin: ${audio_sdata_pin}
     i2s_audio_id: audio_i2s
-    i2s_comm_fmt: lsb
-    mode: mono
+    i2s_comm_fmt: i2s_lsb
+    channel: mono
 
 i2s_audio:
   id: audio_i2s
@@ -639,7 +650,7 @@ cover:
 
     open_action:
       - light.turn_on:
-          id: leds_right
+          id: leds_left
           brightness: !lambda "return id(nightlight).state?${nightlight_brightness}:${cover_brightness};"
           effect: "Cover Position"
       - script.execute: open_cover
@@ -647,7 +658,7 @@ cover:
 
     close_action:
       - light.turn_on:
-          id: leds_right
+          id: leds_left
           brightness: !lambda "return id(nightlight).state?${nightlight_brightness}:${cover_brightness};"
           effect: "Cover Position"
       - script.execute: close_cover
@@ -700,6 +711,9 @@ script:
             - light.turn_on: 
                 id: leds_top
                 brightness: ${nightlight_brightness}
+                red: !lambda "return id(nightlight_color)[0]/100.0;"
+                green: !lambda "return id(nightlight_color)[1]/100.0;"
+                blue: !lambda "return id(nightlight_color)[2]/100.0;"
                 effect: "None"
             - script.execute: led_on_nightlight
           else:
@@ -717,19 +731,27 @@ script:
 
       - if:
           condition:
-            lambda: "return (${relay_count}==3 && id(relay_3).state);"
-          then:
-            - script.execute: led_on_button_middle
-          else:
-            - script.execute: led_off_button_middle
-
-      - if:
-          condition:
             lambda: "return id(relay_2).state;"
           then:
             - script.execute: led_on_button_right
           else:
             - script.execute: led_off_button_right
+      
+      - if:
+          condition:
+            lambda: "return (${relay_count}>=3 && id(relay_3).state);"
+          then:
+            - script.execute: led_on_button_middle
+          else:
+            - script.execute: led_off_button_middle
+      
+      - if:
+          condition:
+            lambda: "return (${relay_count}==4 && id(relay_4).state);"
+          then:
+            - script.execute: led_on_button_middle
+          else:
+            - script.execute: led_off_button_middle
 
   - id: led_on_button_left
     mode: restart
@@ -872,6 +894,9 @@ script:
       - light.turn_on:
           id: leds_right
           effect: "Cover Position"
+      - light.turn_on:
+          id: leds_left
+          effect: "Cover Position"
 
   - id: led_on_full_touch
     mode: restart
@@ -950,6 +975,41 @@ script:
                         - binary_sensor.template.publish:
                             id: touchfield_3
                             state: ON
+
+      - if:
+          condition:
+            lambda: "return ${relay_count}==4;"
+          then:
+            - if:
+                condition:
+                  lambda: "return pos <= 2;"
+                then:
+                  - binary_sensor.template.publish:
+                      id: touchfield_1
+                      state: ON
+
+                else:
+                  - if:
+                      condition:
+                        lambda: "return pos <= 5;"
+                      then:
+                        - binary_sensor.template.publish:
+                            id: touchfield_2
+                            state: ON
+
+                      else:
+                        - if:
+                            condition:
+                              lambda: "return pos <= 8;"
+                            then:
+                              - binary_sensor.template.publish:
+                                  id: touchfield_3
+                                  state: ON
+                            
+                            else:
+                              - binary_sensor.template.publish:
+                                  id: touchfield_4
+                                  state: ON
 
   - id: cover_open_action
     mode: restart
