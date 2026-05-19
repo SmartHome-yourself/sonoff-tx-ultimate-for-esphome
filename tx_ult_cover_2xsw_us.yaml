@@ -1,6 +1,6 @@
 substitutions:
-  name: "shys-tx-ultimate-cover-and-2x-switches"
-  friendly_name: "TX Ultimate Cover and 2x Switches"
+  name: "shys-txult-cover-2xsw-us"
+  friendly_name: "TX Ultimate Cover + 2 Switches US"
 
   relay_count: "4" # Needs at least 4 relays
 
@@ -74,7 +74,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   project:
-    name: smarthomeyourself.tx_ultimate_cover_and_2x_switches
+    name: smarthomeyourself.tx_ult_cover_2xsw_us
     version: "1.0"
     
   on_boot:
@@ -151,7 +151,7 @@ logger:
     uart_debug: INFO
 
 dashboard_import:
-  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ult_cover_2xsw_us.yaml@main
   import_full_config: false
 
 api:

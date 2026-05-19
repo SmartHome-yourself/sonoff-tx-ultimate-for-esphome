@@ -38,6 +38,24 @@ Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Int
 # Installation 
 
 &nbsp;  
+
+## Paket-Varianten und Gerätenamen
+
+Das Standard-Paket nutzt den Hostnamen `shys-tx-ultimate` (`tx_ultimate.yaml`).  
+Alle weiteren Varianten verwenden kürzere Hostnamen (ESPHome-Limit: 31 Zeichen):
+
+| Paketdatei | Standard `name` | Standard `friendly_name` |
+|---|---|---|
+| `tx_ultimate.yaml` | `shys-tx-ultimate` | TX Ultimate |
+| `tx_ult_us.yaml` | `shys-txult-us` | TX Ultimate US |
+| `tx_ult_cover.yaml` | `shys-txult-cover` | TX Ultimate Cover |
+| `tx_ult_cover_us.yaml` | `shys-txult-cover-us` | TX Ultimate Cover US |
+| `tx_ult_local.yaml` | `shys-txult-local` | TX Ultimate Local |
+| `tx_ult_local_us.yaml` | `shys-txult-local-us` | TX Ultimate Local US |
+| `tx_ult_cover_2xsw_us.yaml` | `shys-txult-cover-2xsw-us` | TX Ultimate Cover + 2 Switches US |
+| `tx_ult_2xcov_us.yaml` | `shys-txult-2xcov-us` | TX Ultimate 2 Covers US |
+
+&nbsp;  
     
 ## Minimal Konfiguration
 Dies ist der benötigte Code, um das tx ultimate mit dieser Komponente zu verwenden.  
@@ -72,7 +90,7 @@ wifi:
 &nbsp;  
   
 ## Lokale Verwendung in ESPHome
-Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ultimate_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ultimate_local.yaml) in Ihr Projekt kopieren.  
+Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ult_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ult_local.yaml) in Ihr Projekt kopieren.  
 Wenn Sie die benutzerdefinierte Komponente lokal verwenden möchten, können Sie den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in Ihr ESPHome-Verzeichnis oder einen Unterordner kopieren und lokal einbinden.
 Dann müssen Sie nur noch die Quelle des external_components-Eintrags ändern.
 
@@ -99,8 +117,8 @@ Die Zeitangaben für cover_open_duration und cover_close_duration sollten so gen
 
 ```
 substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
+  name: "shys-txult-cover"
+  friendly_name: "SHYS TX Ultimate Cover"
   relay_count: "2"
   
   cover_open_duration: 25s
@@ -109,7 +127,7 @@ substitutions:
 packages:
   smarthomeyourself.tx-ultimate:
     url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
-    file: tx_ultimate_cover.yaml
+    file: tx_ult_cover.yaml
     ref: main
   
 esphome:
@@ -137,7 +155,7 @@ wifi:
 Alle Ersetzungen sind optional, aber ich empfehle, mindestens `name`, `friendly_name` und `relay_count` anzugeben.  
 Die Pins sind bereits in der Hardware angegeben und müssen daher nicht geändert werden.  
 
-## Standard-Konfiguration (tx_ultimate.yaml / tx_ultimate_local.yaml)
+## Standard-Konfiguration (tx_ultimate.yaml / tx_ult_local.yaml)
 ```
 substitutions:
   name: "shys-tx-ultimate"
@@ -205,12 +223,12 @@ substitutions:
 ```
   
   
-## Cover-Konfiguration (tx_ultimate_cover.yaml)
+## Cover-Konfiguration (tx_ult_cover.yaml)
 Bei der Jalousie weichen die Parameter etwas ab.
 
 ```
 substitutions:
-  name: "shys-tx-ultimate-cover"
+  name: "shys-txult-cover"
   friendly_name: "TX Ultimate Cover"
 
   relay_count: "3"

@@ -1,5 +1,5 @@
 substitutions:
-  name: "shys-tx-ultimate-cover"
+  name: "shys-txult-cover"
   friendly_name: "TX Ultimate Cover"
 
   relay_count: "3"
@@ -77,7 +77,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   project:
-    name: smarthomeyourself.tx_ultimate_cover
+    name: smarthomeyourself.tx_ult_cover
     version: "1.0"
     
   on_boot:
@@ -151,7 +151,7 @@ logger:
     uart_debug: INFO
 
 dashboard_import:
-  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate_cover.yaml@main
+  package_import_url: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ult_cover.yaml@main
   import_full_config: false
 
 api:
@@ -407,10 +407,10 @@ light:
     type: GRB
     variant: WS2811
     pin: ${led_pin}
-    num_leds: 32
+    num_leds: 28
     name: "NeoPixel Light"
     id: leds
-    default_transition_length: 0.7s
+    default_transition_length: 0s
     effects:
       - addressable_rainbow:
           name: "Rainbow"
@@ -431,27 +431,24 @@ light:
     internal: true
     segments:
       - id: leds
-        from: 9
-        to: 14
+        from: 7
+        to: 7
   - platform: partition
     name: "LEDs Button middle"
     id: leds_button_middle
     internal: true
     segments:
       - id: leds
-        from: 2
-        to: 5
-      - id: leds
-        from: 18
-        to: 21
+        from: 9
+        to: 9
   - platform: partition
     name: "LEDs Button left"
     id: leds_button_left
     internal: true
     segments:
       - id: leds
-        from: 25
-        to: 30
+        from: 11
+        to: 11
 
   - platform: partition
     name: "LEDs Nightlight"
@@ -459,8 +456,17 @@ light:
     internal: true
     segments:
       - id: leds
+        from: 8
+        to: 8
+      - id: leds
+        from: 10
+        to: 10
+      - id: leds
+        from: 12
+        to: 19
+      - id: leds_top
         from: 0
-        to: 31
+        to: 6
 
   - platform: partition
     name: "LEDs Top"
@@ -468,11 +474,8 @@ light:
     internal: true
     segments:
       - id: leds
-        from: 31
-        to: 31
-      - id: leds
-        from: 0
-        to: 8
+        from: 20
+        to: 26
     effects:
       - addressable_scan:
           name: "Scan"
@@ -487,8 +490,8 @@ light:
     internal: true
     segments:
       - id: leds
-        from: 25
-        to: 30
+        from: 13
+        to: 19
     effects:
       - pulse:
           name: "Pulse"
@@ -501,8 +504,11 @@ light:
     internal: true
     segments:
       - id: leds
-        from: 9
-        to: 14
+        from: 27
+        to: 27
+      - id: leds
+        from: 0
+        to: 5
     effects:
       - pulse:
           name: "Pulse"
