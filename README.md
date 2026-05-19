@@ -41,6 +41,8 @@ The screenshot shows an example of the device in Home Assistant after integratio
   
 ## Package variants and device names
 
+All packages use the **ESP-IDF** framework, **esp32_rmt_led_strip** for LEDs, and the current **i2s_audio** / **speaker** stack (new IDF I²S driver, not legacy).
+
 The standard package uses the hostname `shys-tx-ultimate` (`tx_ultimate.yaml`).  
 All other variants use shorter hostnames (ESPHome limit: 31 characters):
 
@@ -551,15 +553,14 @@ So you can handle all events easy in Home Assistant.
 The long press event is only usable by using the on_long_touch_release action at the moment.  
   
 ### LEDs
-There are 28 addressable LEDs on board. They are implemented as neopixel platform with 2 predefined effects.
+There are 28 addressable LEDs on board (32 on US variants), driven via `esp32_rmt_led_strip` with predefined effects.
 
 **Effects:**
 - Rainbow
 - Pulse
 
-### Media player
-I've added the media_player component in the package. But currently it is not really usable.
-It only produce a lot of noise. I'll update the package if I get it to work propperly.
+### Audio / speaker
+An external I²S DAC is configured via `i2s_audio` + `speaker` (ID `media_out`). Quality is still experimental; the PA power switch (`pa_power`) must be on for the amplifier.
   
 ### Vibration motor  
   
@@ -588,11 +589,11 @@ You can use all components based on their ID.
   
 ### LED Lights
 **28 RGBIC LEDs:** leds  
-  
+
 ### Audio
-**media_player:** media_out  
+**speaker:** media_out  
 **i2s_audio:** audio_i2s  
-  
+
 ### Example code to use the components based on their IDs
 This is a simple example to turn the LEDs on and off, which are defined in the package. 
 *Remember, that this is just an example for ID usage. The on_release is not always triggered. (If you release on another point on the surface as you press). Then the LEDs won't turn off.*

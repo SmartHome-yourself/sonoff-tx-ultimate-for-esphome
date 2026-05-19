@@ -137,7 +137,7 @@ esphome:
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    type: esp-idf
 
 logger:
   #  hardware_uart: UART2
@@ -415,9 +415,9 @@ switch:
     name: "${friendly_name} Restart"
 
 light:
-  - platform: neopixelbus
-    type: GRB
-    variant: WS2811
+  - platform: esp32_rmt_led_strip
+    chipset: WS2811
+    rgb_order: GRB
     pin: ${led_pin}
     num_leds: 32
     name: "NeoPixel Light"
@@ -530,6 +530,11 @@ light:
           transition_length: 600ms
           update_interval: 300ms
 
+i2s_audio:
+  id: audio_i2s
+  i2s_lrclk_pin: ${audio_lrclk_pin}
+  i2s_bclk_pin: ${audio_bclk_pin}
+
 speaker:
   - platform: i2s_audio
     id: media_out
@@ -538,11 +543,6 @@ speaker:
     i2s_audio_id: audio_i2s
     i2s_comm_fmt: i2s_lsb
     channel: mono
-
-i2s_audio:
-  id: audio_i2s
-  i2s_lrclk_pin: ${audio_lrclk_pin}
-  i2s_bclk_pin: ${audio_bclk_pin}
 
 uart:
   tx_pin: ${uart_tx_pin}

@@ -41,6 +41,8 @@ Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Int
 
 ## Paket-Varianten und Gerätenamen
 
+Alle Pakete nutzen das **ESP-IDF**-Framework, **esp32_rmt_led_strip** für die LEDs und den aktuellen **i2s_audio**-/**speaker**-Stack (neuer IDF-I²S-Treiber, nicht legacy).
+
 Das Standard-Paket nutzt den Hostnamen `shys-tx-ultimate` (`tx_ultimate.yaml`).  
 Alle weiteren Varianten verwenden kürzere Hostnamen (ESPHome-Limit: 31 Zeichen):
 
@@ -552,15 +554,14 @@ So können Sie alle Ereignisse einfach in Home Assistant verarbeiten.
 Das Langzeitdruck-Ereignis kann derzeit nur über die on_long_touch_release-Aktion verwendet werden.  
   
 ### LEDs
-Auf der Platine befinden sich 28 adressierbare LEDs. Sie sind als Neopixel-Plattform mit 2 vordefinierten Effekten implementiert.  
+Auf der Platine befinden sich 28 adressierbare LEDs (32 bei US-Varianten), angetrieben über `esp32_rmt_led_strip` mit vordefinierten Effekten.  
   
 **Effekte:**
 - Rainbow (Regenbogen)
 - Pulse (Pulsieren)
 
-### Media Player
-Ich habe den Media-Player-Komponenten im Paket hinzugefügt. Derzeit ist er jedoch nicht wirklich verwendbar.  
-Er erzeugt nur viel Lärm. Ich werde das Paket aktualisieren, wenn ich es ordnungsgemäß zum Funktionieren bringe.  
+### Audio / Speaker
+Externer I²S-DAC über `i2s_audio` + `speaker` (ID `media_out`). Die Qualität ist weiterhin experimentell; für den Verstärker muss der PA-Power-Schalter (`pa_power`) aktiv sein.  
   
 ### Vibrationsmotor  
   
@@ -589,11 +590,11 @@ Sie können alle Komponenten anhand ihrer ID verwenden.
   
 ### LED-Leuchten
 **28 RGBIC LEDs:** leds  
-  
+
 ### Audio
-**media_player:** media_out  
+**speaker:** media_out  
 **i2s_audio:** audio_i2s  
-  
+
 ### Beispielcode zur Verwendung der Komponenten anhand ihrer IDs
 Dies ist ein einfaches Beispiel, um die in der Konfiguration definierten LEDs ein- und auszuschalten.  
 *Bitte beachten Sie, dass dies nur ein Beispiel für die Verwendung von IDs ist. Das Ereignis `on_release` wird nicht immer ausgelöst, wenn Sie an einer anderen Stelle auf der Oberfläche loslassen, als Sie gedrückt haben. In diesem Fall werden die LEDs nicht ausgeschaltet.*  
