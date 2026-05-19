@@ -27,7 +27,7 @@ substitutions:
 
   long_press_brightness: "1"
   long_press_color: "{100,0,0}"
-  long_press_effect: "Scan"
+  long_press_effect: "none"
 
   multi_touch_brightness: "1"
   multi_touch_color: "{0,0,0}"
@@ -35,11 +35,11 @@ substitutions:
 
   swipe_left_brightness: "1"
   swipe_left_color: "{0,100,0}"
-  swipe_left_effect: "Scan"
+  swipe_left_effect: "none"
 
   swipe_right_brightness: "1"
   swipe_right_color: "{100,0,70}"
-  swipe_right_effect: "Scan"
+  swipe_right_effect: "none"
 
   relay_1_pin: GPIO18
   relay_2_pin: GPIO17
