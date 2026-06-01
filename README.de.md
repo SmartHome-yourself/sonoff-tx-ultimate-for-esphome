@@ -4,6 +4,11 @@
 
 
 # SONOFF TX Ultimate für ESPHome (Benutzerdefinierte Komponente)
+
+> **Bestehende Installationen:** Geräte-Konfigurationen werden nicht automatisch migriert; für laufende Setups ist eine einmalige Anpassung erforderlich.  
+> 1. **`packages:`** Die YAML-Pakete (Relais, LEDs, WLAN, …) liegen in der **[shys-collection](https://github.com/SmartHome-yourself/shys-collection/tree/main/templates/esphome/setups/sonoff-tx-ultimate)**. Die `packages:`-URL in der eigenen ESPHome-Konfiguration muss auf den neuen Pfad angepasst werden (Beispiele unter [Installation](#installation)).  
+> 2. **`external_components`:** Die Adresse für die externe Komponente bleibt unverändert und muss nicht angepasst werden — die Custom Component für die Touch-Auswertung verbleibt in diesem Repository (`sonoff-tx-ultimate-for-esphome`).
+
 Dies ist eine benutzerdefinierte ESPHome-Komponente für den SONOFF TX Ultimate Smart Switch.  
 Sie ermöglicht Ihnen die Verwendung Ihres Schalters mit ESPHome und umfasst die wichtigsten Funktionen.
 Dank der on_... Aktionen können Sie schnell und einfach eigene Funktionen implementieren.  
@@ -33,127 +38,44 @@ Mit dem Code **DANIELSCHSONOFF** erhaltet Ihr sogar noch einmal 10% auf eure Bes
 Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Integration.  
 ![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/86a6f88e-b453-492e-b9cf-ab50b69ad2e9)
   
-&nbsp;  
-    
-# Installation 
-
-&nbsp;  
-
-## Paket-Varianten und Gerätenamen
-
-Alle Pakete nutzen das **ESP-IDF**-Framework, **esp32_rmt_led_strip** für die LEDs und den aktuellen **i2s_audio**-/**speaker**-Stack (neuer IDF-I²S-Treiber, nicht legacy).
-
-Das Standard-Paket nutzt den Hostnamen `shys-tx-ultimate` (`tx_ultimate.yaml`).  
-Alle weiteren Varianten verwenden kürzere Hostnamen (ESPHome-Limit: 31 Zeichen):
-
-| Paketdatei | Standard `name` | Standard `friendly_name` |
-|---|---|---|
-| `tx_ultimate.yaml` | `shys-tx-ultimate` | TX Ultimate |
-| `tx_ult_us.yaml` | `shys-txult-us` | TX Ultimate US |
-| `tx_ult_cover.yaml` | `shys-txult-cover` | TX Ultimate Cover |
-| `tx_ult_cover_us.yaml` | `shys-txult-cover-us` | TX Ultimate Cover US |
-| `tx_ult_local.yaml` | `shys-txult-local` | TX Ultimate Local |
-| `tx_ult_local_us.yaml` | `shys-txult-local-us` | TX Ultimate Local US |
-| `tx_ult_cover_2xsw_us.yaml` | `shys-txult-cover-2xsw-us` | TX Ultimate Cover + 2 Switches US |
-| `tx_ult_2xcov_us.yaml` | `shys-txult-2xcov-us` | TX Ultimate 2 Covers US |
-
-&nbsp;  
-    
-## Minimal Konfiguration
-Dies ist der benötigte Code, um das tx ultimate mit dieser Komponente zu verwenden.  
-Sie können dies als Basis verwenden, um Ihre eigenen Funktionen zu implementieren oder es so lassen und einfach die Hauptfunktionen nutzen (Relais bei Berührung schalten).  
-```
-substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
-  relay_count: "2"
-
-packages:
-  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
+&nbsp;    
   
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
+# Installation
 
-api:
+&nbsp;
 
-ota:
- - platform: esphome
+## Geräte-Setups (YAML-Pakete)
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  
-  ap:
-    ssid: ${friendly_name} AP
-    password: "top_secret"
-```  
-  
-&nbsp;  
-  
-## Lokale Verwendung in ESPHome
-Sie können Ihr Projekt selbst erstellen, ohne meine Pakete zu verwenden, indem Sie die [tx_ult_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ult_local.yaml) in Ihr Projekt kopieren.  
-Wenn Sie die benutzerdefinierte Komponente lokal verwenden möchten, können Sie den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in Ihr ESPHome-Verzeichnis oder einen Unterordner kopieren und lokal einbinden.
-Dann müssen Sie nur noch die Quelle des external_components-Eintrags ändern.
+Die vollständigen ESPHome-Konfigurationen (Standard, US, Cover, lokal, …) mit den Kurznamen (`tx_ult_*.yaml`) liegen in der **[shys-collection](https://github.com/SmartHome-yourself/shys-collection/tree/main/templates/esphome/setups/sonoff-tx-ultimate)**.
 
-**Beispiel für lokale benutzerdefinierte Komponente**
+Übersicht auf der Website: [ESPHome Setups – SONOFF TX Ultimate](https://new.smarthomeyourself.de/diy-collections/esphome/esphome-setups-sonoff-tx-ultimate)
+
+Details zu Package-URLs, Varianten und Substitutions stehen in der [Setup-README](https://github.com/SmartHome-yourself/shys-collection/blob/main/templates/esphome/setups/sonoff-tx-ultimate/README.md).
+
+Dieses Repository enthält nur die **Custom Component** und eine minimale [component_test.yaml](component_test.yaml) zum Validieren von Builds.
+
+&nbsp;
+
+## Custom Component nutzen (extern)
+
 ```
 external_components:
-  - source: /config/esphome/my_components
+  - source:
+      type: git
+      url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
+      ref: main
     components: [tx_ultimate_touch]
-```  
-  
-&nbsp;  
-  
-## Alternative Jalousie-Steuerung
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/9098ad1d-3a6e-40d8-ad03-d1acfde3cf7a)  
-  
-Wer den Schalter zum steuern von Jalousien einsetzen möchte, benötigt eine etwas abweichende Konfiguration.  
-Vor allem müssen die zwei Relais für den Motor gegeneinander gesperrt werden (interlock).   
-Natürlich funktioniert das nur mit der 2- und 3-Relais-Variante. In beiden Fällen wird für die Motorsteuerung Relais 1 und 2 verwendet, da ich das interlock nicht dynamisch konfigurieren konnte.  
-Bei Schaltern mit 3 Relais ist bei der Cover-Konfiguration daher der mittlere Taster mit dem dritten Relais belegt. Öffnen und schließen steuert man also immer mit den Tasten links und rechts.  
-  
-### Minimal Konfiguration für Jalousie-Steuerung
-Grundsätzlich unterscheidet sich die mindestens notwendige Konfiguration für Jalousien nur in der Package-URL.
-Die Zeitangaben für cover_open_duration und cover_close_duration sollten so genau wie möglich angegeben werden. Lieber aber eine Sekunde zu viel, als zu wenig.
-
 ```
-substitutions:
-  name: "shys-txult-cover"
-  friendly_name: "SHYS TX Ultimate Cover"
-  relay_count: "2"
-  
-  cover_open_duration: 25s
-  cover_close_duration: 25s
-  
-packages:
-  smarthomeyourself.tx-ultimate:
-    url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
-    file: tx_ult_cover.yaml
-    ref: main
-  
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
 
-api:
+&nbsp;
 
-ota:
- - platform: esphome
+## Lokale Component-Kopie
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  
-  ap:
-    ssid: ${friendly_name} AP
-    password: "top_secret"
-```
-  
-  
-&nbsp;  
-    
-# Konfiguration
+Kopiert den [tx_ultimate_touch-Ordner](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) in euer ESPHome-Verzeichnis und verweist `external_components` auf diesen Pfad.
+
+&nbsp;
+
+# Konfiguration (Referenz der Substitutions)
 Alle Ersetzungen sind optional, aber ich empfehle, mindestens `name`, `friendly_name` und `relay_count` anzugeben.  
 Die Pins sind bereits in der Hardware angegeben und müssen daher nicht geändert werden.  
 

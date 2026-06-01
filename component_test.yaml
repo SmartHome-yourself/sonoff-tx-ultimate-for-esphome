@@ -1,0 +1,43 @@
+# Minimal configuration to compile and validate the tx_ultimate_touch component.
+# Full device setups live in shys-collection:
+# templates/esphome/setups/sonoff-tx-ultimate/
+
+substitutions:
+  name: "txult-component-test"
+  friendly_name: "TX Ultimate Component Test"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ap:
+    password: "12345678"
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
+      ref: main
+    components: [tx_ultimate_touch]
+
+uart:
+  tx_pin: GPIO19
+  rx_pin: GPIO22
+  id: my_uart
+  baud_rate: 115200
+
+tx_ultimate_touch:
+  uart: my_uart

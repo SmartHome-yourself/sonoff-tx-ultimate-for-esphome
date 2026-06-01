@@ -4,6 +4,11 @@
 
 
 # SONOFF TX Ultimate for ESPHome (Custom Component)
+
+> **Existing installations:** Device configurations are not migrated automatically; running setups require a one-time adjustment.  
+> 1. **`packages:`** YAML packages (relays, LEDs, Wi‑Fi, …) are hosted in **[shys-collection](https://github.com/SmartHome-yourself/shys-collection/tree/main/templates/esphome/setups/sonoff-tx-ultimate)**. Update the `packages:` URL in your ESPHome configuration to the new path (see [Installation](#installation)).  
+> 2. **`external_components`:** The URL for the external component is unchanged and does not need to be modified — the custom component for touch handling remains in this repository (`sonoff-tx-ultimate-for-esphome`).
+
 This is an ESPHome custom component for the SONOFF TX Ultimate Smart Switch.  
 It gives you the ability to use your Switch with ESPHome, including the main features.
 Thanks to the on_... actions, you can implement your own functions quickly and easily.  
@@ -35,125 +40,42 @@ The screenshot shows an example of the device in Home Assistant after integratio
   
 &nbsp;    
   
-# Installation 
+# Installation
 
-&nbsp;  
-  
-## Package variants and device names
+&nbsp;
 
-All packages use the **ESP-IDF** framework, **esp32_rmt_led_strip** for LEDs, and the current **i2s_audio** / **speaker** stack (new IDF I²S driver, not legacy).
+## Device setups (YAML packages)
 
-The standard package uses the hostname `shys-tx-ultimate` (`tx_ultimate.yaml`).  
-All other variants use shorter hostnames (ESPHome limit: 31 characters):
+Full ESPHome configurations (standard, US, cover, local, …) with the short filenames (`tx_ult_*.yaml`) live in **[shys-collection](https://github.com/SmartHome-yourself/shys-collection/tree/main/templates/esphome/setups/sonoff-tx-ultimate)**.
 
-| Package file | Default `name` | Default `friendly_name` |
-|---|---|---|
-| `tx_ultimate.yaml` | `shys-tx-ultimate` | TX Ultimate |
-| `tx_ult_us.yaml` | `shys-txult-us` | TX Ultimate US |
-| `tx_ult_cover.yaml` | `shys-txult-cover` | TX Ultimate Cover |
-| `tx_ult_cover_us.yaml` | `shys-txult-cover-us` | TX Ultimate Cover US |
-| `tx_ult_local.yaml` | `shys-txult-local` | TX Ultimate Local |
-| `tx_ult_local_us.yaml` | `shys-txult-local-us` | TX Ultimate Local US |
-| `tx_ult_cover_2xsw_us.yaml` | `shys-txult-cover-2xsw-us` | TX Ultimate Cover + 2 Switches US |
-| `tx_ult_2xcov_us.yaml` | `shys-txult-2xcov-us` | TX Ultimate 2 Covers US |
+Overview on the website: [ESPHome Setups – SONOFF TX Ultimate](https://new.smarthomeyourself.de/diy-collections/esphome/esphome-setups-sonoff-tx-ultimate)
 
-&nbsp;  
-  
-## Minimal code
-This is the needed code to use the tx ultimate with this component. 
-You can use this as base to implement your own features or leave it as it is and go with the main features (switch relay on touch).  
-(Add `_us` to the package file name if you want to use the US version of the switch, e.g. `tx_ult_us.yaml` instead of `tx_ultimate.yaml`).
-```
-substitutions:
-  name: "shys-tx-ultimate"
-  friendly_name: "SHYS TX Ultimate"
-  relay_count: "2"
+See the [setup README](https://github.com/SmartHome-yourself/shys-collection/blob/main/templates/esphome/setups/sonoff-tx-ultimate/README.md) for package URLs, variants, and substitutions.
 
-packages:
-  smarthomeyourself.tx-ultimate: github://SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tx_ultimate.yaml@main
-  
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
+This repository contains only the **custom component** and a minimal [component_test.yaml](component_test.yaml) to validate builds.
 
-api:
+&nbsp;
 
-ota:
- - platform: esphome
+## Use the custom component (external)
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  
-  ap:
-    ssid: ${friendly_name} AP
-    password: "top_secret"
-```  
-  
-&nbsp;  
-  
-## Local use in ESPHome
-You can create your Project yourself without usage of my package by copy the [tx_ult_local.yaml](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/blob/main/tx_ult_local.yaml) into your project.  
-If you want to use the custom component localy, you can copy the [tx_ultimate_touch folder](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) into your esphome directory or some subfolder and include it local.
-Then you only have to change the source of the external_components entry.
-
-**Example for local custom component**
 ```
 external_components:
-  - source: /config/esphome/my_components
+  - source:
+      type: git
+      url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
+      ref: main
     components: [tx_ultimate_touch]
-```  
-  
-&nbsp;  
-  
-## Alternative Blind Control
-![image](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/assets/705724/9098ad1d-3a6e-40d8-ad03-d1acfde3cf7a)  
-  
-If you want to use the switch for blind control, you need a slightly different configuration.  
-Especially, the two relays for the motor must be interlocked.  
-This setup works only with the 2- and 3-relay version. In both cases, Relays 1 and 2 are used for motor control, as I couldn't configure interlock dynamically.  
-For switches with 3 relays, the middle button is assigned to the third relay in the cover configuration. So, you control opening and closing using the left and right buttons.
-
-### Minimal Configuration for Blind Control
-The minimal necessary configuration for blinds differs only in the package URL.  
-The timings for `cover_open_duration` and `cover_close_duration` should be as accurate as possible. It's better to have a second too much than too little.
-
 ```
-substitutions:
-  name: "shys-txult-cover"
-  friendly_name: "SHYS TX Ultimate Cover"
-  relay_count: "2"
-  
-  cover_open_duration: 25s
-  cover_close_duration: 25s
-  
-packages:
-  smarthomeyourself.tx-ultimate:
-    url: https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome
-    file: tx_ult_cover.yaml
-    ref: main
-  
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
 
-api:
+&nbsp;
 
-ota:
- - platform: esphome
+## Local component copy
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  
-  ap:
-    ssid: ${friendly_name} AP
-    password: "top_secret"
-```
-  
-&nbsp;  
-  
-# Configuration
+Copy the [tx_ultimate_touch folder](https://github.com/SmartHome-yourself/sonoff-tx-ultimate-for-esphome/tree/main/components/) into your ESPHome directory and point `external_components` to that path.
+
+&nbsp;
+
+# Configuration (substitutions reference)
 All substitutions are optional, but I recommend specifying at least name, friendly_name, and relay_count.  
 The pins are already specified by the hardware and therefore do not actually have to be changed.  
   
