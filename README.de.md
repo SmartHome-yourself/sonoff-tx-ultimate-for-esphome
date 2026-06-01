@@ -48,7 +48,7 @@ Der Screenshot zeigt ein Beispiel für das Gerät in Home Assistant nach der Int
 
 Die vollständigen ESPHome-Konfigurationen (Standard, US, Cover, lokal, …) mit den Kurznamen (`tx_ult_*.yaml`) liegen in der **[shys-collection](https://github.com/SmartHome-yourself/shys-collection/tree/main/templates/esphome/setups/sonoff-tx-ultimate)**.
 
-Übersicht auf der Website: [ESPHome Setups – SONOFF TX Ultimate](https://new.smarthomeyourself.de/diy-collections/esphome/esphome-setups-sonoff-tx-ultimate)
+Übersicht auf der Website: [ESPHome Setups – SONOFF TX Ultimate](https://www.smarthomeyourself.de/diy-collections/esphome/esphome-setups-sonoff-tx-ultimate)
 
 Details zu Package-URLs, Varianten und Substitutions stehen in der [Setup-README](https://github.com/SmartHome-yourself/shys-collection/blob/main/templates/esphome/setups/sonoff-tx-ultimate/README.md).
 

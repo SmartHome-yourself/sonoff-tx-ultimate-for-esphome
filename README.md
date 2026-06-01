@@ -48,7 +48,7 @@ The screenshot shows an example of the device in Home Assistant after integratio
 
 Full ESPHome configurations (standard, US, cover, local, …) with the short filenames (`tx_ult_*.yaml`) live in **[shys-collection](https://github.com/SmartHome-yourself/shys-collection/tree/main/templates/esphome/setups/sonoff-tx-ultimate)**.
 
-Overview on the website: [ESPHome Setups – SONOFF TX Ultimate](https://new.smarthomeyourself.de/diy-collections/esphome/esphome-setups-sonoff-tx-ultimate)
+Overview on the website: [ESPHome Setups – SONOFF TX Ultimate](https://www.smarthomeyourself.de/diy-collections/esphome/esphome-setups-sonoff-tx-ultimate)
 
 See the [setup README](https://github.com/SmartHome-yourself/shys-collection/blob/main/templates/esphome/setups/sonoff-tx-ultimate/README.md) for package URLs, variants, and substitutions.
 
