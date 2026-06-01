@@ -4,9 +4,6 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/uart/uart_component.h"
-#include "esphome/components/binary_sensor/binary_sensor.h"
-#include "esphome/components/switch/switch.h"
-#include "esphome/components/light/addressable_light.h"
 
 namespace esphome
 {

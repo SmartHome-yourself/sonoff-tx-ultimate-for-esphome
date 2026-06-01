@@ -26,6 +26,8 @@ wifi:
   ap:
     password: "12345678"
 
+captive_portal:
+
 external_components:
   - source:
       type: git
