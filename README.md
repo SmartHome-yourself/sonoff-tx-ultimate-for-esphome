@@ -489,7 +489,7 @@ Touch events use `cmd 02`:
 
 - Positions from 1 (left edge) to 10 (right edge) were observed.
 - A short slide ends with a two-byte payload instead of a release; the component reports it as a release at the second position.
-- The last two swipe bytes vary from swipe to swipe (`03 FF`, `00 F0`, `00 3C`, ...); their meaning is unknown.
+- The last two swipe bytes are a 10-bit map of the channels crossed: bits 0-7 of the last byte are channels 1-8, bits 0-1 of the byte before are channels 9-10 (`03 FF` = all ten, `00 3C` = channels 3-6). The panel has 10 touch channels along the horizontal axis (CA51F353S3 controller, see SONOFF's T5 development material); there is no vertical position.
 - The panel does not always send a release: on quick taps a press often comes alone (20 of 36 rapid taps in one test). Nothing is sent while a finger rests on the panel either, so a quick tap without release cannot be told apart from a finger still held.
 - A palm and two fingers send the same multi-touch frame.
 - At power-on the controller sends `AA 55 01 07 00 62 3B` (`cmd 07`, no payload), followed by a plain-text banner such as `FWSWES-T5TOUCH-T5-CA51F3-V1.1.0`. A software restart of the ESP does not trigger it.

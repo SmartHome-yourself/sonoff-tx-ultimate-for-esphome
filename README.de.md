@@ -490,7 +490,7 @@ Touch-Ereignisse verwenden `cmd 02`:
 
 - Beobachtet wurden Positionen von 1 (linker Rand) bis 10 (rechter Rand).
 - Ein kurzes Wischen endet mit zwei Nutzdatenbytes statt eines Loslassens; die Komponente meldet es als Loslassen an der zweiten Position.
-- Die letzten beiden Bytes beim Wischen ändern sich von Mal zu Mal (`03 FF`, `00 F0`, `00 3C`, ...); ihre Bedeutung ist unbekannt.
+- Die letzten beiden Bytes beim Wischen sind eine 10-Bit-Maske der überstrichenen Kanäle: Bits 0-7 des letzten Bytes sind die Kanäle 1-8, Bits 0-1 des Bytes davor die Kanäle 9-10 (`03 FF` = alle zehn, `00 3C` = Kanäle 3-6). Das Panel hat 10 Touch-Kanäle entlang der horizontalen Achse (Controller CA51F353S3, siehe SONOFFs T5 Development Material); eine vertikale Position gibt es nicht.
 - Das Panel sendet nicht immer ein Loslassen: bei schnellem Tippen kommt oft nur der Druck (20 von 36 schnellen Berührungen in einem Test). Solange ein Finger aufliegt, wird ebenfalls nichts gesendet; ein schnelles Tippen ohne Loslassen lässt sich daher nicht von einem noch aufliegenden Finger unterscheiden.
 - Handfläche und zwei Finger senden denselben Rahmen für Mehrfachberührung.
 - Beim Einschalten sendet der Controller `AA 55 01 07 00 62 3B` (`cmd 07`, ohne Nutzdaten), gefolgt von einem Klartext-Banner wie `FWSWES-T5TOUCH-T5-CA51F3-V1.1.0`. Ein Software-Neustart des ESP löst ihn nicht aus.
