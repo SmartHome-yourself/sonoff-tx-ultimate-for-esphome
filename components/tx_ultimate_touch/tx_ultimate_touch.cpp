@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "esphome/core/log.h"
 #include "tx_ultimate_touch.h"
 
@@ -5,18 +7,18 @@ namespace esphome
 {
     namespace tx_ultimate_touch
     {
-        static const char *TAG = "tx_ultimate_touch";
+        static const char *const TAG = "tx_ultimate_touch";
 
         void TxUltimateTouch::setup()
         {
-            ESP_LOGI("log", "%s", "Tx Ultimate Touch is initialized");
+            ESP_LOGI(TAG, "Tx Ultimate Touch is initialized");
         }
 
         void TxUltimateTouch::loop()
         {
             bool found = false;
 
-            int bytes[15] = {};
+            int bytes[FRAME_SIZE] = {};
             int byte = -1;
             int i = 0;
 
@@ -25,19 +27,28 @@ namespace esphome
                 byte = this->read();
                 if (byte == 170)
                 {
-                    handle_touch(bytes);
+                    if (i > 0)
+                    {
+                        handle_touch(bytes);
+                    }
+                    std::fill(bytes, bytes + FRAME_SIZE, 0);
                     i = 0;
                 }
 
-                bytes[i] = byte;
-
-                i++;
+                // Bytes can pile up without a frame start in between (e.g. while
+                // the device boots). Writing them unchecked ran past the buffer
+                // and corrupted the stack, so drop them until the next frame.
+                if (i < FRAME_SIZE)
+                {
+                    bytes[i] = byte;
+                    i++;
+                }
 
                 if (byte != 0)
                 {
                     found = true;
                 }
-            };
+            }
 
             if (found)
             {
@@ -48,7 +59,7 @@ namespace esphome
         void TxUltimateTouch::handle_touch(int bytes[])
         {
             ESP_LOGV("UART-Log", "------------");
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < FRAME_SIZE; i++)
             {
                 ESP_LOGV("UART-Log", "%i", bytes[i]);
             }
@@ -109,8 +120,6 @@ namespace esphome
 
         bool TxUltimateTouch::is_valid_data(int bytes[])
         {
-            bool valid = true;
-
             if (!(bytes[0] == 170 && bytes[1] == 85 && bytes[2] == 1 && bytes[3] == 2))
             {
                 return false;

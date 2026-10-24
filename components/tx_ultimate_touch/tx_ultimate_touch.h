@@ -18,6 +18,9 @@ namespace esphome
         const static uint8_t TOUCH_STATE_SWIPE_RIGHT = 12;
         const static uint8_t TOUCH_STATE_SWIPE_LEFT = 13;
 
+        // Largest frame kept from the touch controller; longer bursts are cut.
+        static constexpr int FRAME_SIZE = 15;
+
         struct TouchPoint
         {
             int8_t x = -1;
