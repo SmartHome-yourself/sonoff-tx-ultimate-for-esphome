@@ -18,6 +18,19 @@ namespace esphome
         const static uint8_t TOUCH_STATE_SWIPE_RIGHT = 12;
         const static uint8_t TOUCH_STATE_SWIPE_LEFT = 13;
 
+        // Frames from the touch controller:
+        //   AA 55 | 01 | cmd | len | payload[len] | CRC-16/CCITT-FALSE (big endian)
+        // The CRC covers everything after the AA 55 sync. Touch events use cmd 02.
+        static constexpr uint8_t FRAME_SYNC_1 = 0xAA;
+        static constexpr uint8_t FRAME_SYNC_2 = 0x55;
+        static constexpr uint8_t FRAME_CMD_TOUCH = 0x02;
+        static constexpr int FRAME_HEADER_SIZE = 5;
+        static constexpr int FRAME_CRC_SIZE = 2;
+        static constexpr int FRAME_MAX_PAYLOAD = 8;
+        static constexpr int FRAME_SIZE = FRAME_HEADER_SIZE + FRAME_MAX_PAYLOAD + FRAME_CRC_SIZE;
+        // A frame takes about 1 ms on the wire; a longer gap means bytes were lost.
+        static constexpr uint32_t FRAME_TIMEOUT_MS = 50;
+
         struct TouchPoint
         {
             int8_t x = -1;
@@ -44,6 +57,8 @@ namespace esphome
             void dump_config() override;
 
         protected:
+            void feed_byte_(uint8_t byte);
+            void handle_frame_();
             void send_touch_(TouchPoint tp);
             void handle_touch(int bytes[]);
 
@@ -58,6 +73,10 @@ namespace esphome
             Trigger<TouchPoint> swipe_trigger_right_;
             Trigger<TouchPoint> full_touch_release_trigger_;
             Trigger<TouchPoint> long_touch_release_trigger_;
+
+            uint8_t frame_[FRAME_SIZE];
+            int frame_len_ = 0;
+            uint32_t last_byte_ms_ = 0;
 
         }; // class TxUltimateTouch
 

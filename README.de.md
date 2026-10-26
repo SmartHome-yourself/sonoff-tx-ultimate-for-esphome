@@ -470,6 +470,32 @@ Sie sendet Informationen für die folgenden Ereignisse:
 - Berührung von mehr als einem Sensorenpunkt (Loslassen)
 - Langzeitdruck (5 Sekunden)
   
+#### UART-Rahmenformat
+Mitgeschnitten an einem TX Ultimate mit 115200 Baud, 8N1. Jeder Rahmen ist so aufgebaut:
+
+`AA 55 | 01 | cmd | len | Nutzdaten (len Bytes) | CRC`
+
+Die CRC ist CRC-16/CCITT-FALSE (Polynom 0x1021, Startwert 0xFFFF), Big Endian, berechnet über alles nach `AA 55`.
+Touch-Ereignisse verwenden `cmd 02`:
+
+| Ereignis | len | Nutzdaten | Beispiel |
+|---|---|---|---|
+| Druck | 2 | `00 <pos>` | `AA 55 01 02 02 00 05 68 F0` |
+| Loslassen | 1 | `<pos>` | `AA 55 01 02 01 05 FF 80` |
+| Loslassen nach kurzem Wischen | 2 | `<pos> <pos>` | `AA 55 01 02 02 08 09 20 D5` |
+| Loslassen nach Langzeitdruck | 1 | `<pos + 16>` | `AA 55 01 02 01 15 ED B1` |
+| Wischen nach rechts | 3 | `0C xx xx` | `AA 55 01 02 03 0C 03 FF AA 2D` |
+| Wischen nach links | 3 | `0D xx xx` | `AA 55 01 02 03 0D 03 FF 9D 1D` |
+| Loslassen nach Mehrfachberührung | 1 | `0B` | `AA 55 01 02 01 0B 1E 4E` |
+
+- Beobachtet wurden Positionen von 1 (linker Rand) bis 10 (rechter Rand).
+- Ein kurzes Wischen endet mit zwei Nutzdatenbytes statt eines Loslassens; die Komponente meldet es als Loslassen an der zweiten Position.
+- Die letzten beiden Bytes beim Wischen sind eine 10-Bit-Maske der überstrichenen Kanäle: Bits 0-7 des letzten Bytes sind die Kanäle 1-8, Bits 0-1 des Bytes davor die Kanäle 9-10 (`03 FF` = alle zehn, `00 3C` = Kanäle 3-6). Das Panel hat 10 Touch-Kanäle entlang der horizontalen Achse (Controller CA51F353S3, siehe SONOFFs T5 Development Material); eine vertikale Position gibt es nicht.
+- Das Panel sendet nicht immer ein Loslassen: bei schnellem Tippen kommt oft nur der Druck (20 von 36 schnellen Berührungen in einem Test). Solange ein Finger aufliegt, wird ebenfalls nichts gesendet; ein schnelles Tippen ohne Loslassen lässt sich daher nicht von einem noch aufliegenden Finger unterscheiden.
+- Handfläche und zwei Finger senden denselben Rahmen für Mehrfachberührung.
+- Beim Einschalten sendet der Controller `AA 55 01 07 00 62 3B` (`cmd 07`, ohne Nutzdaten), gefolgt von einem Klartext-Banner wie `FWSWES-T5TOUCH-T5-CA51F3-V1.1.0`. Ein Software-Neustart des ESP löst ihn nicht aus.
+- `0xAA` kann innerhalb der CRC vorkommen, deshalb beendet die Komponente einen Rahmen anhand des Längenbytes und nicht am nächsten `AA`.
+  
 ### Binäre Sensoren
 Ich habe einen binären Sensor für jeden Typ von Touch-Ereignis hinzugefügt, außer für den Langzeitdruck.  
 So können Sie alle Ereignisse einfach in Home Assistant verarbeiten.  

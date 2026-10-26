@@ -469,6 +469,32 @@ It send information for the following events:
 - touch on more than one sensor-point (release)
 - long press (5 seconds)
   
+#### UART frame format
+Captured on a TX Ultimate at 115200 baud, 8N1. Every frame looks like this:
+
+`AA 55 | 01 | cmd | len | payload (len bytes) | CRC`
+
+The CRC is CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF), big endian, computed over everything after `AA 55`.
+Touch events use `cmd 02`:
+
+| Event | len | Payload | Example |
+|---|---|---|---|
+| Press | 2 | `00 <pos>` | `AA 55 01 02 02 00 05 68 F0` |
+| Release | 1 | `<pos>` | `AA 55 01 02 01 05 FF 80` |
+| Release after a short slide | 2 | `<pos> <pos>` | `AA 55 01 02 02 08 09 20 D5` |
+| Long press release | 1 | `<pos + 16>` | `AA 55 01 02 01 15 ED B1` |
+| Swipe right | 3 | `0C xx xx` | `AA 55 01 02 03 0C 03 FF AA 2D` |
+| Swipe left | 3 | `0D xx xx` | `AA 55 01 02 03 0D 03 FF 9D 1D` |
+| Multi-touch release | 1 | `0B` | `AA 55 01 02 01 0B 1E 4E` |
+
+- Positions from 1 (left edge) to 10 (right edge) were observed.
+- A short slide ends with a two-byte payload instead of a release; the component reports it as a release at the second position.
+- The last two swipe bytes are a 10-bit map of the channels crossed: bits 0-7 of the last byte are channels 1-8, bits 0-1 of the byte before are channels 9-10 (`03 FF` = all ten, `00 3C` = channels 3-6). The panel has 10 touch channels along the horizontal axis (CA51F353S3 controller, see SONOFF's T5 development material); there is no vertical position.
+- The panel does not always send a release: on quick taps a press often comes alone (20 of 36 rapid taps in one test). Nothing is sent while a finger rests on the panel either, so a quick tap without release cannot be told apart from a finger still held.
+- A palm and two fingers send the same multi-touch frame.
+- At power-on the controller sends `AA 55 01 07 00 62 3B` (`cmd 07`, no payload), followed by a plain-text banner such as `FWSWES-T5TOUCH-T5-CA51F3-V1.1.0`. A software restart of the ESP does not trigger it.
+- `0xAA` can appear inside the CRC, so the component ends a frame using the length byte, not the next `AA`.
+  
 ### Binary sensors
 I've added one binary sensor for each type of touch event, except the long press.  
 So you can handle all events easy in Home Assistant.  
